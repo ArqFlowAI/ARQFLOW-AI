@@ -1,0 +1,51 @@
+{
+  "name": "ARQFLOW - Recuperação de Lead",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": { "interval": [{ "field": "hours", "hoursInterval": 24 }] }
+      },
+      "name": "Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.ARQFLOW_API_URL }}/api/cron/inactive-leads",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "headerParameters": {
+          "parameters": [{ "name": "Authorization", "value": "Bearer {{ $env.CRON_SECRET }}" }]
+        }
+      },
+      "name": "Buscar leads inativos",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Loop Leads",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [750, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.ZAPI_URL }}/send-text",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "={{ JSON.stringify({ phone: $json.phone, message: 'Olá! Ainda pensando no seu projeto? Estamos à disposição.' }) }}"
+      },
+      "name": "WhatsApp Follow-up",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [1000, 300]
+    }
+  ],
+  "connections": {
+    "Schedule": { "main": [[{ "node": "Buscar leads inativos", "type": "main", "index": 0 }]] },
+    "Buscar leads inativos": { "main": [[{ "node": "Loop Leads", "type": "main", "index": 0 }]] },
+    "Loop Leads": { "main": [[{ "node": "WhatsApp Follow-up", "type": "main", "index": 0 }]] }
+  }
+}

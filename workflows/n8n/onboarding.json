@@ -1,0 +1,41 @@
+{
+  "name": "ARQFLOW - Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "arqflow-onboarding",
+        "responseMode": "onReceived"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "={{ $env.RESEND_FROM }}",
+        "toEmail": "={{ $json.email }}",
+        "subject": "Bem-vindo ao ARQFLOW AI",
+        "html": "<h1>Olá {{ $json.name }}</h1><p>Sua conta está pronta. Acesse o dashboard.</p>"
+      },
+      "name": "Email Boas-vindas",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{ $env.ARQFLOW_API_URL }}/api/automations/log",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "={{ JSON.stringify({ event: 'onboarding', email: $json.email }) }}"
+      },
+      "name": "Log ARQFLOW",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [750, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Email Boas-vindas", "type": "main", "index": 0 }]] },
+    "Email Boas-vindas": { "main": [[{ "node": "Log ARQFLOW", "type": "main", "index": 0 }]] }
+  }
+}
