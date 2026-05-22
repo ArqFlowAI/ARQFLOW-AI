@@ -22,18 +22,7 @@ export const navItems = [
   { title: "FAQ", href: "#faq" },
 ];
 
-export const dashboardNav = [
-  { title: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
-  { title: "Projetos", href: "/dashboard/projetos", icon: "FolderKanban" },
-  { title: "Render IA", href: "/dashboard/renders", icon: "Image" },
-  { title: "Conceitos", href: "/dashboard/conceitos", icon: "Lightbulb" },
-  { title: "Orçamentos", href: "/dashboard/orcamentos", icon: "FileText" },
-  { title: "CRM", href: "/crm", icon: "Users" },
-  { title: "WhatsApp", href: "/whatsapp", icon: "MessageCircle" },
-  { title: "Automações", href: "/dashboard/automacoes", icon: "Workflow" },
-  { title: "Billing", href: "/billing", icon: "CreditCard" },
-  { title: "Configurações", href: "/dashboard/configuracoes", icon: "Settings" },
-];
+export { dashboardNav, navGroups } from "@/config/dashboard-nav";
 
 /** @deprecated Use CRM_STAGES from @/lib/crm/constants */
 export const crmStages = CRM_STAGES;

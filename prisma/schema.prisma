@@ -16,7 +16,8 @@ enum UserRole {
 }
 
 enum SubscriptionPlan {
-  STARTER
+  FREE
+  BASIC
   PRO
   PREMIUM
 }
@@ -170,13 +171,13 @@ model User {
 model Subscription {
   id                   String             @id @default(cuid())
   organizationId       String             @unique
-  plan                 SubscriptionPlan   @default(STARTER)
-  status               SubscriptionStatus @default(TRIALING)
+  plan                 SubscriptionPlan   @default(FREE)
+  status               SubscriptionStatus @default(ACTIVE)
   billingProvider      PaymentProvider?
   stripeCustomerId     String?
   stripeSubscriptionId String?
   kiwifyOrderId        String?
-  credits              Int                @default(50)
+  credits              Int                @default(10)
   creditsUsed          Int                @default(0)
   currentPeriodStart   DateTime?
   currentPeriodEnd     DateTime?

@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PLANS } from "@/config/plans";
 import { cn } from "@/lib/utils";
 
-const planOrder = ["STARTER", "PRO", "PREMIUM"] as const;
+const planOrder = ["FREE", "BASIC", "PRO", "PREMIUM"] as const;
 
 export function Pricing() {
   return (

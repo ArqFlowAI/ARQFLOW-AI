@@ -10,7 +10,9 @@ import { sendWelcomeEmail } from "@/emails/send";
 import { triggerN8nWebhook } from "@/services/n8n.service";
 
 const PLAN_MAP: Record<string, SubscriptionPlan> = {
-  starter: SubscriptionPlan.STARTER,
+  free: SubscriptionPlan.FREE,
+  starter: SubscriptionPlan.BASIC,
+  basic: SubscriptionPlan.BASIC,
   pro: SubscriptionPlan.PRO,
   premium: SubscriptionPlan.PREMIUM,
 };

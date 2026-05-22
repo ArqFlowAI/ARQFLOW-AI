@@ -53,6 +53,22 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 Todo login (email ou Google) executa `syncUserFromSupabase`:
 
-- Cria `User` + `Organization` + `Subscription` trial se novo
+- Cria `User` + `Organization` + `Subscription` **FREE** se novo
 - Vincula por `supabaseId` ou email existente
 - Middleware renova cookies JWT automaticamente
+
+### Banco desatualizado (signup falha após criar usuário no Supabase)
+
+Se o Postgres ainda tiver o plano `STARTER` no enum, o Prisma quebra ao criar assinatura `FREE`.
+
+```bash
+npm run db:sync
+```
+
+Isso adiciona `FREE`/`BASIC`, migra `STARTER` → `FREE` e aplica `prisma db push`.
+
+### Cadastro não redireciona
+
+- Confirme `NEXT_PUBLIC_APP_URL` em `.env.local` (sem placeholder)
+- Adicione a URL de callback nas Redirect URLs do Supabase
+- Com **Confirm email** ativo, o fluxo vai para `/verificar-email` (sem sessão até confirmar)

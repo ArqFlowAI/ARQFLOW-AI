@@ -64,6 +64,7 @@ export type SessionUser = {
   organizationName: string;
   role: string;
   plan: string;
+  subscriptionStatus: string;
   credits: number;
   onboardingDone: boolean;
 };

@@ -12,6 +12,9 @@ export type SyncUserParams = {
 };
 
 export async function syncUserFromSupabase(params: SyncUserParams) {
+  if (!params.email) {
+    throw new Error("Missing email from Supabase user metadata");
+  }
   const email = params.email.toLowerCase().trim();
 
   const bySupabase = await prisma.user.findUnique({
@@ -50,7 +53,6 @@ export async function syncUserFromSupabase(params: SyncUserParams) {
 
   const orgName =
     params.organizationName ?? `${params.name ?? "Meu"} Escritório`;
-  const slug = generateOrgSlug(orgName);
 
   return prisma.$transaction(async (tx) => {
     const user = await tx.user.create({
@@ -62,25 +64,40 @@ export async function syncUserFromSupabase(params: SyncUserParams) {
       },
     });
 
-    await tx.organization.create({
-      data: {
-        name: orgName,
-        slug,
-        members: {
-          create: { userId: user.id, role: "OWNER" },
-        },
-        subscription: {
-          create: {
-            plan: SubscriptionPlan.STARTER,
-            status: SubscriptionStatus.TRIALING,
-            credits: getPlanCredits(SubscriptionPlan.STARTER),
-            currentPeriodStart: new Date(),
-            currentPeriodEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+    let slug = generateOrgSlug(orgName);
+    for (let attempt = 0; attempt < 5; attempt++) {
+      try {
+        await tx.organization.create({
+          data: {
+            name: orgName,
+            slug,
+            members: {
+              create: { userId: user.id, role: "OWNER" },
+            },
+            subscription: {
+              create: {
+                plan: SubscriptionPlan.FREE,
+                status: SubscriptionStatus.ACTIVE,
+                credits: getPlanCredits(SubscriptionPlan.FREE),
+                creditsUsed: 0,
+                currentPeriodStart: new Date(),
+                currentPeriodEnd: null,
+              },
+            },
+            settings: { create: {} },
           },
-        },
-        settings: { create: {} },
-      },
-    });
+        });
+        break;
+      } catch (err) {
+        const isSlugConflict =
+          err &&
+          typeof err === "object" &&
+          "code" in err &&
+          (err as { code: string }).code === "P2002";
+        if (!isSlugConflict || attempt === 4) throw err;
+        slug = generateOrgSlug(orgName);
+      }
+    }
 
     return tx.user.findUniqueOrThrow({
       where: { id: user.id },

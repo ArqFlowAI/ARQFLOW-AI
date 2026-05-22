@@ -20,12 +20,14 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
   canceled: "Cancelado",
 };
 
-export const PLAN_ORDER = ["STARTER", "PRO", "PREMIUM"] as const;
+export const PLAN_ORDER = ["FREE", "BASIC", "PRO", "PREMIUM"] as const;
 
 export function comparePlans(current: string, target: string) {
+  const normalize = (p: string) => (p === "STARTER" ? "BASIC" : p);
   const order = PLAN_ORDER as readonly string[];
-  const a = order.indexOf(current);
-  const b = order.indexOf(target);
+  const a = order.indexOf(normalize(current));
+  const b = order.indexOf(normalize(target));
+  if (a === -1 || b === -1) return "upgrade";
   if (a === b) return "same";
   return b > a ? "upgrade" : "downgrade";
 }

@@ -20,7 +20,7 @@ export default function LoginPage() {
           ARQFLOW AI
         </Link>
         <CardTitle className="mt-4 font-display">Bem-vindo de volta</CardTitle>
-        <CardDescription>Entre com email ou Google</CardDescription>
+        <CardDescription>Entre com email e senha</CardDescription>
       </CardHeader>
       <CardContent>
         <LoginForm />

@@ -1,24 +1,29 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { AUTH_ROUTES, isPublicApiRoute } from "@/lib/auth/constants";
+import { checkPlanInMiddleware } from "@/lib/billing/middleware-plan";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
+  // If Supabase env vars are not configured, skip session handling to avoid server errors.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    console.warn("Supabase env vars missing — skipping middleware session handling");
+    return supabaseResponse;
+  }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet: CookieToSet[]) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
+          // Do not mutate the incoming request.cookies (not writable in middleware).
+          // Create a response and set cookies there for Supabase to persist.
           supabaseResponse = NextResponse.next({ request });
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
@@ -77,6 +82,11 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = AUTH_ROUTES.dashboard;
     return NextResponse.redirect(url);
+  }
+
+  if (user) {
+    const planBlock = await checkPlanInMiddleware(request);
+    if (planBlock) return planBlock;
   }
 
   return supabaseResponse;

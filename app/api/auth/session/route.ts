@@ -1,4 +1,5 @@
 import { getSession, getSupabaseAuthUser } from "@/lib/auth/session";
+import { hasPlanAccess } from "@/config/plans";
 
 export async function GET() {
   const authUser = await getSupabaseAuthUser();
@@ -17,5 +18,14 @@ export async function GET() {
       email: authUser.email,
       emailConfirmed: !!authUser.email_confirmed_at,
     },
+    features: session
+      ? {
+          renders: hasPlanAccess(session.plan, "renders"),
+          crm: hasPlanAccess(session.plan, "crm"),
+          whatsapp: hasPlanAccess(session.plan, "whatsapp"),
+          automations: hasPlanAccess(session.plan, "automations"),
+          budgets: hasPlanAccess(session.plan, "budgets"),
+        }
+      : null,
   });
 }

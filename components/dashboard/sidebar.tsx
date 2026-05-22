@@ -21,11 +21,12 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { dashboardNav } from "@/config/site";
+import { dashboardNav, navGroups } from "@/config/dashboard-nav";
+import { hasPlanAccess, FEATURE_MIN_PLAN, PLANS, normalizePlanKey } from "@/config/plans";
+import type { PlanFeature } from "@/config/plans";
 import { useUIStore } from "@/store/ui.store";
 import { logoutAction } from "@/actions/auth.actions";
 import type { SessionUser } from "@/types";
-import { PLANS } from "@/config/plans";
 import type { SubscriptionPlan } from "@prisma/client";
 
 const icons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -41,13 +42,6 @@ const icons: Record<string, React.ComponentType<{ className?: string }>> = {
   Settings,
 };
 
-const navGroups = [
-  { label: "Principal", items: ["Dashboard", "Projetos"] },
-  { label: "Inteligência", items: ["Render IA", "Conceitos", "Orçamentos"] },
-  { label: "Comercial", items: ["CRM", "WhatsApp", "Automações"] },
-  { label: "Conta", items: ["Billing", "Configurações"] },
-];
-
 export function Sidebar({ session }: { session: SessionUser }) {
   const pathname = usePathname();
   const {
@@ -57,7 +51,8 @@ export function Sidebar({ session }: { session: SessionUser }) {
     setSidebarOpen,
     toggleSidebarCollapsed,
   } = useUIStore();
-  const plan = PLANS[session.plan as SubscriptionPlan];
+  const planKey = normalizePlanKey(session.plan);
+  const plan = PLANS[planKey];
   const collapsed = sidebarCollapsed;
 
   return (
@@ -142,30 +137,63 @@ export function Sidebar({ session }: { session: SessionUser }) {
                         : pathname === item.href ||
                           pathname.startsWith(item.href + "/");
 
+                    const feature = item.feature as PlanFeature | undefined;
+                    const locked =
+                      feature &&
+                      !hasPlanAccess(session.plan, feature);
+                    const requiredPlan = feature
+                      ? FEATURE_MIN_PLAN[feature]
+                      : null;
+                    const href = locked
+                      ? `/billing/upgrade?feature=${feature}&plan=${requiredPlan}&from=${encodeURIComponent(item.href)}`
+                      : item.href;
+
                     return (
                       <Link
                         key={item.href}
-                        href={item.href}
-                        title={collapsed ? item.title : undefined}
+                        href={href}
+                        title={
+                          collapsed
+                            ? locked
+                              ? `${item.title} — upgrade`
+                              : item.title
+                            : undefined
+                        }
                         onClick={() => setSidebarOpen(false)}
                         className={cn(
                           "group relative flex items-center gap-3 rounded-xl text-sm font-medium transition-all",
                           collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
-                          active
+                          active && !locked
                             ? "bg-brand-dark text-brand-bg shadow-md"
-                            : "text-brand-dark/65 hover:bg-brand-beige/50 hover:text-brand-black dark:hover:bg-brand-dark/40"
+                            : locked
+                              ? "text-brand-dark/40 hover:bg-brand-beige/30"
+                              : "text-brand-dark/65 hover:bg-brand-beige/50 hover:text-brand-black dark:hover:bg-brand-dark/40"
                         )}
                       >
-                        {active && (
+                        {active && !locked && (
                           <span className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-brand-beige" />
                         )}
                         <Icon
                           className={cn(
                             "h-4 w-4 shrink-0",
-                            active ? "text-brand-beige" : "text-brand-dark/70"
+                            active && !locked
+                              ? "text-brand-beige"
+                              : "text-brand-dark/70",
+                            locked && "opacity-50"
                           )}
                         />
-                        {!collapsed && <span>{item.title}</span>}
+                        {!collapsed && (
+                          <>
+                            <span className={cn(locked && "opacity-60")}>
+                              {item.title}
+                            </span>
+                            {locked && requiredPlan && (
+                              <span className="ml-auto rounded bg-brand-beige/80 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-brand-dark">
+                                {PLANS[normalizePlanKey(requiredPlan)].name}
+                              </span>
+                            )}
+                          </>
+                        )}
                       </Link>
                     );
                   })}

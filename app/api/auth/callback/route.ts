@@ -30,14 +30,25 @@ export async function GET(request: Request) {
   }
 
   const meta = data.user.user_metadata;
+  if (!data.user.email) {
+    console.error("[Auth Callback] missing email in provider response", data.user);
+    return NextResponse.redirect(`${origin}/login?error=missing_email`);
+  }
 
-  await syncUserFromSupabase({
-    supabaseId: data.user.id,
-    email: data.user.email!,
-    name: meta?.full_name ?? meta?.name,
-    avatarUrl: meta?.avatar_url,
-    organizationName: meta?.organization_name,
-  });
+  try {
+    await syncUserFromSupabase({
+      supabaseId: data.user.id,
+      email: data.user.email,
+      name: meta?.full_name ?? meta?.name,
+      avatarUrl: meta?.avatar_url,
+      organizationName: meta?.organization_name,
+    });
+  } catch (err) {
+    console.error("[Auth Callback] syncUserFromSupabase failed", err);
+    return NextResponse.redirect(
+      `${origin}/login?error=${encodeURIComponent("server_user_sync")}`
+    );
+  }
 
   let destination = await getPostAuthRedirect(data.user.id);
 

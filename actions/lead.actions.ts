@@ -1,6 +1,7 @@
 "use server";
 
 import { requireSession } from "@/lib/auth/session";
+import { assertPlanFeature } from "@/lib/billing/plan-guard";
 import { leadRepository } from "@/repositories/lead.repository";
 import { leadSchema, leadUpdateSchema } from "@/utils/validations";
 import type { LeadPriority, LeadStage } from "@prisma/client";
@@ -12,8 +13,13 @@ function revalidateCrm() {
   CRM_PATHS.forEach((p) => revalidatePath(p));
 }
 
+async function assertCrmAccess(organizationId: string) {
+  await assertPlanFeature(organizationId, "crm");
+}
+
 export async function createLeadAction(formData: FormData) {
   const session = await requireSession();
+  await assertCrmAccess(session.organizationId);
 
   const parsed = leadSchema.safeParse({
     name: formData.get("name"),
@@ -57,6 +63,7 @@ export async function saveLeadAction(payload: {
   stage?: LeadStage;
 }) {
   const session = await requireSession();
+  await assertCrmAccess(session.organizationId);
 
   if (payload.id) {
     const parsed = leadUpdateSchema.safeParse(payload);
@@ -97,6 +104,7 @@ export async function saveLeadAction(payload: {
 
 export async function getLeadDetailAction(leadId: string) {
   const session = await requireSession();
+  await assertCrmAccess(session.organizationId);
   const lead = await leadRepository.findById(leadId, session.organizationId);
   if (!lead) return { error: "Lead não encontrado" };
   return { success: true, data: lead };
@@ -108,6 +116,7 @@ export async function updateLeadStageAction(
   position: number
 ) {
   const session = await requireSession();
+  await assertCrmAccess(session.organizationId);
 
   const lead = await leadRepository.moveStage(
     leadId,
@@ -128,6 +137,7 @@ export async function reorderLeadsAction(
   orderedIds: string[]
 ) {
   const session = await requireSession();
+  await assertCrmAccess(session.organizationId);
   await leadRepository.reorderInStage(
     session.organizationId,
     stage,
@@ -143,6 +153,7 @@ export async function updateLeadAction(
   data: Record<string, unknown>
 ) {
   const session = await requireSession();
+  await assertCrmAccess(session.organizationId);
   const parsed = leadUpdateSchema.safeParse(data);
 
   if (!parsed.success) {
@@ -164,6 +175,7 @@ export async function updateLeadAction(
 
 export async function addLeadNoteAction(leadId: string, content: string) {
   const session = await requireSession();
+  await assertCrmAccess(session.organizationId);
   if (!content.trim()) return { error: "Nota vazia" };
 
   const note = await leadRepository.addNote(
@@ -181,6 +193,7 @@ export async function addLeadNoteAction(leadId: string, content: string) {
 
 export async function deleteLeadAction(leadId: string) {
   const session = await requireSession();
+  await assertCrmAccess(session.organizationId);
   await leadRepository.delete(leadId, session.organizationId);
   revalidateCrm();
   return { success: true };

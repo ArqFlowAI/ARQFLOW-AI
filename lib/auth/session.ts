@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { syncUserFromSupabase } from "@/services/auth.service";
 import type { SessionUser } from "@/types";
 import { AppError } from "@/lib/errors";
+import { normalizeSubscriptionPlan } from "@/lib/billing/plan-access";
+import type { SubscriptionStatus } from "@prisma/client";
 
 export async function getSupabaseAuthUser() {
   const supabase = await createClient();
@@ -32,28 +34,33 @@ export async function getSession(): Promise<SessionUser | null> {
   });
 
   if (!user) {
-    const synced = await syncUserFromSupabase({
-      supabaseId: authUser.id,
-      email: authUser.email,
-      name:
-        authUser.user_metadata?.full_name ??
-        authUser.user_metadata?.name ??
-        authUser.user_metadata?.organization_name,
-      avatarUrl: authUser.user_metadata?.avatar_url,
-      organizationName: authUser.user_metadata?.organization_name,
-    });
+    try {
+      const synced = await syncUserFromSupabase({
+        supabaseId: authUser.id,
+        email: authUser.email,
+        name:
+          authUser.user_metadata?.full_name ??
+          authUser.user_metadata?.name ??
+          authUser.user_metadata?.organization_name,
+        avatarUrl: authUser.user_metadata?.avatar_url,
+        organizationName: authUser.user_metadata?.organization_name,
+      });
 
-    user = await prisma.user.findUnique({
-      where: { id: synced.id },
-      include: {
-        memberships: {
-          include: {
-            organization: { include: { subscription: true } },
+      user = await prisma.user.findUnique({
+        where: { id: synced.id },
+        include: {
+          memberships: {
+            include: {
+              organization: { include: { subscription: true } },
+            },
+            take: 1,
           },
-          take: 1,
         },
-      },
-    });
+      });
+    } catch (err) {
+      console.error("[getSession] syncUserFromSupabase failed", err);
+      return null;
+    }
   }
 
   if (!user || user.memberships.length === 0) return null;
@@ -61,6 +68,8 @@ export async function getSession(): Promise<SessionUser | null> {
   const membership = user.memberships[0];
   const org = membership.organization;
   const sub = org.subscription;
+
+  const plan = normalizeSubscriptionPlan(sub?.plan ?? "FREE");
 
   return {
     id: user.id,
@@ -70,8 +79,9 @@ export async function getSession(): Promise<SessionUser | null> {
     organizationId: org.id,
     organizationName: org.name,
     role: membership.role,
-    plan: sub?.plan ?? "STARTER",
-    credits: (sub?.credits ?? 50) - (sub?.creditsUsed ?? 0),
+    plan,
+    subscriptionStatus: (sub?.status ?? "ACTIVE") as SubscriptionStatus,
+    credits: (sub?.credits ?? 10) - (sub?.creditsUsed ?? 0),
     onboardingDone: user.onboardingDone,
   };
 }

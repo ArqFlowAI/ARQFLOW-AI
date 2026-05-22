@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     if (!success) throw new AppError("Muitas requisições", 429);
 
     const { plan } = await request.json();
-    if (!["STARTER", "PRO", "PREMIUM"].includes(plan)) {
+    if (!["FREE", "BASIC", "PRO", "PREMIUM"].includes(plan)) {
       throw new AppError("Plano inválido");
     }
 

@@ -1,12 +1,24 @@
-import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { GOOGLE_AUTH_ENABLED } from "@/config/auth";
 
+/**
+ * Login Google — desativado até configurar o provider no Supabase.
+ * Defina GOOGLE_AUTH_ENABLED = true em config/auth.ts quando estiver pronto.
+ */
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? new URL(request.url).origin;
+
+  if (!GOOGLE_AUTH_ENABLED) {
+    return NextResponse.redirect(
+      `${appUrl}/login?error=${encodeURIComponent("Login com Google em breve. Use email e senha.")}`
+    );
+  }
+
+  const { createClient } = await import("@/lib/supabase/server");
+  const { searchParams } = new URL(request.url);
   const redirect = searchParams.get("redirect") ?? "/dashboard";
 
   const supabase = await createClient();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? origin;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",

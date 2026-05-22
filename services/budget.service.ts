@@ -3,7 +3,10 @@ import { calculateBudgetEstimate } from "@/lib/budgets/calculator";
 import { generateBudgetProposalText } from "@/services/openai.service";
 import { generateBudgetPDF } from "@/services/budget-pdf.service";
 import { consumeCredits } from "@/services/credits.service";
-import { assertActiveSubscription } from "@/lib/billing/plan-guard";
+import {
+  assertActiveSubscription,
+  assertPlanFeature,
+} from "@/lib/billing/plan-guard";
 import { BUDGET_CREDIT_COST } from "@/lib/budgets/constants";
 import {
   budgetSchema,
@@ -74,7 +77,7 @@ export async function createBudgetProposal(params: {
   const subtotal = params.items.reduce((s, i) => s + i.total, 0);
   const total = Math.max(0, subtotal - params.discount + params.tax);
 
-  await assertActiveSubscription(params.organizationId);
+  await assertPlanFeature(params.organizationId, "budgets");
   await consumeCredits(
     params.organizationId,
     BUDGET_CREDIT_COST,

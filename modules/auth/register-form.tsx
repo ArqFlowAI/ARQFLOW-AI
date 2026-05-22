@@ -72,19 +72,6 @@ export function RegisterForm() {
           {pending ? "Criando conta..." : "Criar conta grátis"}
         </Button>
       </form>
-
-      <div className="relative my-6">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-brand-light/30" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-brand-dark/60 dark:bg-brand-black">ou</span>
-        </div>
-      </div>
-
-      <Button variant="outline" className="w-full" asChild>
-        <Link href="/api/auth/google?redirect=/onboarding">Continuar com Google</Link>
-      </Button>
     </>
   );
 }

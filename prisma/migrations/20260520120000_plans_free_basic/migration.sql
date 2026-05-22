@@ -1,0 +1,3 @@
+-- Migração em duas etapas (PostgreSQL exige commit entre ADD VALUE e UPDATE).
+-- Prefira: npm run db:sync
+-- Ou execute manualmente 01_add_enum_values.sql e 02_migrate_starter.sql, depois prisma db push.

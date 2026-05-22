@@ -87,7 +87,7 @@ export async function handleSubscriptionUpdated(
   subscription: Stripe.Subscription
 ) {
   const organizationId = subscription.metadata.organizationId;
-  const plan = (subscription.metadata.plan as SubscriptionPlan) ?? "STARTER";
+  const plan = (subscription.metadata.plan as SubscriptionPlan) ?? "BASIC";
 
   if (!organizationId) return;
 

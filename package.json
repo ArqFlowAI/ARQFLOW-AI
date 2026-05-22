@@ -9,6 +9,7 @@
     "lint": "next lint",
     "db:generate": "node scripts/with-env-local.mjs prisma generate",
     "db:push": "node scripts/with-env-local.mjs prisma db push",
+    "db:sync": "node scripts/db-sync.mjs",
     "db:migrate": "node scripts/with-env-local.mjs prisma migrate dev",
     "db:studio": "node scripts/with-env-local.mjs prisma studio",
     "env:setup": "node scripts/setup-env-local.mjs",

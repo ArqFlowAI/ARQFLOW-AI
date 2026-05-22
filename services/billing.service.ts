@@ -23,7 +23,7 @@ export async function getBillingPageData(
 
   return {
     subscription: {
-      plan: sub?.plan ?? "STARTER",
+      plan: sub?.plan ?? "FREE",
       status: sub?.status ?? "TRIALING",
       credits,
       creditsUsed,

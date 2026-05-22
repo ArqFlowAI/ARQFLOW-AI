@@ -8,8 +8,20 @@ import {
 import { redirect } from "next/navigation";
 import { loginSchema, registerSchema } from "@/utils/validations";
 import { translateAuthError } from "@/lib/auth/errors";
+import {
+  formatSyncError,
+  rethrowIfRedirect,
+} from "@/lib/auth/action-errors";
 import { AUTH_ROUTES } from "@/lib/auth/constants";
 import type { AuthActionState } from "@/types/auth";
+
+function getAppUrl(): string | null {
+  const url = process.env.NEXT_PUBLIC_APP_URL?.trim();
+  if (!url || url.includes("your-") || !/^https?:\/\//i.test(url)) {
+    return null;
+  }
+  return url.replace(/\/$/, "");
+}
 
 export async function loginAction(
   _prev: AuthActionState,
@@ -35,12 +47,17 @@ export async function loginAction(
     return { error: "Falha ao autenticar" };
   }
 
-  await syncUserFromSupabase({
-    supabaseId: data.user.id,
-    email: data.user.email!,
-    name: data.user.user_metadata?.name,
-    avatarUrl: data.user.user_metadata?.avatar_url,
-  });
+  try {
+    await syncUserFromSupabase({
+      supabaseId: data.user.id,
+      email: data.user.email!,
+      name: data.user.user_metadata?.name,
+      avatarUrl: data.user.user_metadata?.avatar_url,
+    });
+  } catch (err) {
+    rethrowIfRedirect(err);
+    return { error: formatSyncError(err) };
+  }
 
   const redirectTo = formData.get("redirect") as string | null;
   const destination =
@@ -66,8 +83,15 @@ export async function registerAction(
     return { error: parsed.error.errors[0]?.message };
   }
 
+  const appUrl = getAppUrl();
+  if (!appUrl) {
+    return {
+      error:
+        "NEXT_PUBLIC_APP_URL não configurada. Defina a URL do app em .env.local (ex.: http://localhost:3000).",
+    };
+  }
+
   const supabase = await createClient();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
   const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
@@ -89,12 +113,17 @@ export async function registerAction(
     return { error: "Falha ao criar conta" };
   }
 
-  await syncUserFromSupabase({
-    supabaseId: data.user.id,
-    email: parsed.data.email,
-    name: parsed.data.name,
-    organizationName: parsed.data.organizationName,
-  });
+  try {
+    await syncUserFromSupabase({
+      supabaseId: data.user.id,
+      email: parsed.data.email,
+      name: parsed.data.name,
+      organizationName: parsed.data.organizationName,
+    });
+  } catch (err) {
+    rethrowIfRedirect(err);
+    return { error: formatSyncError(err) };
+  }
 
   if (!data.session) {
     redirect(AUTH_ROUTES.verifyEmail);
@@ -116,8 +145,12 @@ export async function resetPasswordAction(
   const email = (formData.get("email") as string)?.trim();
   if (!email) return { error: "Email é obrigatório" };
 
+  const appUrl = getAppUrl();
+  if (!appUrl) {
+    return { error: "NEXT_PUBLIC_APP_URL não configurada no servidor." };
+  }
+
   const supabase = await createClient();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${appUrl}${AUTH_ROUTES.updatePassword}`,

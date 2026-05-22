@@ -51,15 +51,17 @@ export function BillingPlans({
       <div>
         <h2 className="font-display text-xl font-semibold">Planos</h2>
         <p className="text-sm text-brand-dark/60">
-          Starter, Pro e Premium — upgrade, downgrade ou nova assinatura
+          Free, Basic, Pro e Premium — upgrade, downgrade ou nova assinatura
         </p>
       </div>
-      <div className="grid gap-6 md:grid-cols-3">
-        {(["STARTER", "PRO", "PREMIUM"] as const).map((key, i) => {
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        {(["FREE", "BASIC", "PRO", "PREMIUM"] as const).map((key, i) => {
           const plan = PLANS[key];
-          const isCurrent = currentPlan === key;
+          const currentPlanKey = String(currentPlan);
+          const normalizedCurrent = currentPlanKey === "STARTER" ? "BASIC" : currentPlanKey;
+          const isCurrent = normalizedCurrent === key;
           const isPopular = key === "PRO";
-          const action = comparePlans(currentPlan, key);
+          const action = comparePlans(currentPlanKey, key);
 
           return (
             <motion.div

@@ -32,9 +32,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSupabaseUser(user);
 
     if (user) {
-      const res = await fetch("/api/auth/session");
-      const data = await res.json();
-      setAppUser(data.user ?? null);
+        try {
+          const res = await fetch("/api/auth/session");
+          if (res.ok) {
+            const data = await res.json();
+            setAppUser(data.user ?? null);
+          } else {
+            setAppUser(null);
+          }
+        } catch (err) {
+          console.error("[AuthProvider] refresh session failed", err);
+          setAppUser(null);
+        }
     } else {
       setAppUser(null);
     }
@@ -48,9 +57,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setSupabaseUser(session?.user ?? null);
       if (session?.user) {
-        fetch("/api/auth/session")
-          .then((r) => r.json())
-          .then((d) => setAppUser(d.user ?? null));
+          fetch("/api/auth/session")
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => setAppUser(d?.user ?? null))
+            .catch((err) => {
+              console.error("[AuthProvider] onAuthStateChange session fetch failed", err);
+              setAppUser(null);
+            });
       } else {
         setAppUser(null);
       }

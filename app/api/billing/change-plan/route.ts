@@ -5,7 +5,7 @@ import { SubscriptionPlan } from "@prisma/client";
 import { z } from "zod";
 
 const schema = z.object({
-  plan: z.enum(["STARTER", "PRO", "PREMIUM"]),
+  plan: z.enum(["FREE", "BASIC", "PRO", "PREMIUM"]),
 });
 
 export async function POST(request: Request) {
