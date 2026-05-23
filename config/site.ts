@@ -4,7 +4,7 @@ export const siteConfig = {
   name: "ARQFLOW AI",
   description:
     "Plataforma premium de IA para arquitetos, designers e marcenarias. Renders, propostas e automações de vendas.",
-  url: process.env.NEXT_PUBLIC_APP_URL || "https://arqflow.ai",
+  url: process.env.NEXT_PUBLIC_APP_URL || "https://arqflow-ai.vercel.app",
   ogImage: "/og-image.png",
   links: {
     twitter: "https://twitter.com/arqflowai",

@@ -9,8 +9,7 @@ import { Input } from "@/components/ui/input";
 import { dashboardNav } from "@/config/site";
 import type { SessionUser } from "@/types";
 import { cn } from "@/lib/utils";
-import { PLANS } from "@/config/plans";
-import type { SubscriptionPlan } from "@prisma/client";
+import { PLANS, normalizePlanKey } from "@/config/plans";
 import { useUIStore } from "@/store/ui.store";
 
 const quickLinks = [
@@ -27,7 +26,7 @@ export function Topbar({ session }: { session: SessionUser }) {
       pathname === n.href ||
       (n.href !== "/dashboard" && pathname.startsWith(n.href))
   );
-  const plan = PLANS[session.plan as SubscriptionPlan];
+  const plan = PLANS[normalizePlanKey(session.plan) as keyof typeof PLANS];
 
   return (
     <header

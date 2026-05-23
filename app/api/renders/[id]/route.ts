@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth/session";
+import { assertPlanFeature } from "@/lib/billing/plan-guard";
 import { prisma } from "@/lib/prisma";
 import { handleApiError } from "@/lib/errors";
 
@@ -11,6 +12,8 @@ export async function GET(
     if (!session) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    await assertPlanFeature(session.organizationId, "renders");
 
     const { id } = await params;
     const render = await prisma.render.findFirst({

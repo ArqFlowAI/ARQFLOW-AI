@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth/session";
+import { assertPlanFeature } from "@/lib/billing/plan-guard";
 import { prisma } from "@/lib/prisma";
 import { projectSchema } from "@/utils/validations";
 import { handleApiError } from "@/lib/errors";
@@ -20,6 +21,8 @@ export async function POST(request: Request) {
     if (!parsed.success) {
       return Response.json({ error: parsed.error.errors[0]?.message }, { status: 400 });
     }
+
+    await assertPlanFeature(session.organizationId, "projects");
 
     const project = await prisma.project.create({
       data: {

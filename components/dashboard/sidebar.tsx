@@ -27,7 +27,6 @@ import type { PlanFeature } from "@/config/plans";
 import { useUIStore } from "@/store/ui.store";
 import { logoutAction } from "@/actions/auth.actions";
 import type { SessionUser } from "@/types";
-import type { SubscriptionPlan } from "@prisma/client";
 
 const icons: Record<string, React.ComponentType<{ className?: string }>> = {
   LayoutDashboard,
@@ -51,7 +50,7 @@ export function Sidebar({ session }: { session: SessionUser }) {
     setSidebarOpen,
     toggleSidebarCollapsed,
   } = useUIStore();
-  const planKey = normalizePlanKey(session.plan);
+  const planKey = normalizePlanKey(session.plan) as keyof typeof PLANS;
   const plan = PLANS[planKey];
   const collapsed = sidebarCollapsed;
 
@@ -189,7 +188,7 @@ export function Sidebar({ session }: { session: SessionUser }) {
                             </span>
                             {locked && requiredPlan && (
                               <span className="ml-auto rounded bg-brand-beige/80 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-brand-dark">
-                                {PLANS[normalizePlanKey(requiredPlan)].name}
+                                {PLANS[normalizePlanKey(requiredPlan) as keyof typeof PLANS].name}
                               </span>
                             )}
                           </>

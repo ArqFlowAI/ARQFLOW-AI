@@ -39,6 +39,7 @@ export async function listBudgets(organizationId: string, userId?: string) {
 }
 
 export async function getBudget(id: string, organizationId: string) {
+  await assertPlanFeature(organizationId, "budgets");
   const budget = await budgetRepository.findById(id, organizationId);
   if (!budget) throw new AppError("Orçamento não encontrado", 404);
   return budget;

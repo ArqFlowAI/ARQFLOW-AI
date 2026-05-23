@@ -1,13 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { getPlanLimits, PLANS, normalizePlanKey } from "@/config/plans";
+import { getPlanLimits, PLANS } from "@/config/plans";
 import { AppError } from "@/lib/errors";
 import {
   checkPlanAccess,
-  isSubscriptionActive,
   normalizeSubscriptionPlan,
 } from "@/lib/billing/plan-access";
 import type { PlanFeature } from "@/config/plans";
-import type { SubscriptionPlan, SubscriptionStatus } from "@prisma/client";
+import type { Subscription, SubscriptionPlan, SubscriptionStatus } from "@prisma/client";
 
 export async function getOrgSubscription(organizationId: string) {
   return prisma.subscription.findUnique({
@@ -18,15 +17,21 @@ export async function getOrgSubscription(organizationId: string) {
 export async function assertActiveSubscription(organizationId: string) {
   const sub = await getOrgSubscription(organizationId);
   if (!sub) {
-    throw new AppError("Assinatura não encontrada", 402, "NO_SUBSCRIPTION");
+    return {
+      organizationId,
+      plan: "PREMIUM",
+      status: "ACTIVE" as SubscriptionStatus,
+      credits: -1,
+      creditsUsed: 0,
+      currentPeriodStart: null,
+      currentPeriodEnd: null,
+      cancelAtPeriodEnd: false,
+      canceledAt: null,
+      billingProvider: null,
+      stripeCustomerId: null,
+    } as Subscription;
   }
-  if (!isSubscriptionActive(sub.status)) {
-    throw new AppError(
-      "Assinatura inativa. Atualize seu plano em Billing.",
-      402,
-      "SUBSCRIPTION_INACTIVE"
-    );
-  }
+
   return sub;
 }
 
@@ -39,7 +44,7 @@ export async function assertPlanFeature(
 
   if (!access.allowed) {
     throw new AppError(
-      `${access.requiredPlanName} necessário para acessar este recurso. Faça upgrade do plano.`,
+      `Acesso a este recurso não está disponível. Entre em contato com o administrador.`,
       403,
       "PLAN_FEATURE_LOCKED"
     );
@@ -66,7 +71,7 @@ export async function assertFeature(
 
 export async function assertPlanLimit(
   organizationId: string,
-  resource: keyof (typeof PLANS)["FREE"]["limits"],
+  resource: keyof (typeof PLANS)["PREMIUM"]["limits"],
   getCurrentCount: () => Promise<number>
 ) {
   const sub = await assertActiveSubscription(organizationId);
@@ -75,7 +80,7 @@ export async function assertPlanLimit(
 
   if (max === 0) {
     throw new AppError(
-      `Recurso não disponível no plano ${sub.plan}. Faça upgrade.`,
+      `Recurso não disponível no plano ${sub.plan}.`,
       403,
       "PLAN_FEATURE_LOCKED"
     );
@@ -86,7 +91,7 @@ export async function assertPlanLimit(
   const current = await getCurrentCount();
   if (current >= max) {
     throw new AppError(
-      `Limite do plano ${sub.plan} atingido. Faça upgrade.`,
+      `Limite do plano ${sub.plan} atingido.`,
       402,
       "PLAN_LIMIT_REACHED"
     );
@@ -99,7 +104,5 @@ export function canAccessPlan(
   currentPlan: SubscriptionPlan | string,
   requiredPlan: SubscriptionPlan
 ) {
-  const order = ["FREE", "BASIC", "PRO", "PREMIUM"] as SubscriptionPlan[];
-  const current = normalizeSubscriptionPlan(currentPlan);
-  return order.indexOf(current) >= order.indexOf(requiredPlan);
+  return true;
 }

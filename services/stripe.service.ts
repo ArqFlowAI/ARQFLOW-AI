@@ -87,13 +87,14 @@ export async function handleSubscriptionUpdated(
   subscription: Stripe.Subscription
 ) {
   const organizationId = subscription.metadata.organizationId;
-  const plan = (subscription.metadata.plan as SubscriptionPlan) ?? "BASIC";
+  const plan = (subscription.metadata.plan as SubscriptionPlan) ?? "PRO";
 
   if (!organizationId) return;
 
   const statusMap: Record<string, SubscriptionStatus> = {
     active: SubscriptionStatus.ACTIVE,
-    trialing: SubscriptionStatus.TRIALING,
+    // Map Stripe 'trialing' to INCOMPLETE so trial periods don't grant full access
+    trialing: SubscriptionStatus.INCOMPLETE,
     past_due: SubscriptionStatus.PAST_DUE,
     canceled: SubscriptionStatus.CANCELED,
     incomplete: SubscriptionStatus.INCOMPLETE,

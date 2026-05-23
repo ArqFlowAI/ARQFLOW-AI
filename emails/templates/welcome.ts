@@ -1,5 +1,5 @@
 export function welcomeEmailHtml(name: string) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://arqflow.ai";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://arqflow-ai.vercel.app";
   return `
 <!DOCTYPE html>
 <html>

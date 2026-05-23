@@ -1,12 +1,7 @@
 import { SubscriptionPlan } from "@prisma/client";
 
 /** Planos comerciais (ordem crescente de acesso) */
-export const PLAN_ORDER: SubscriptionPlan[] = [
-  "FREE",
-  "BASIC",
-  "PRO",
-  "PREMIUM",
-];
+export const PLAN_ORDER: SubscriptionPlan[] = ["PREMIUM"];
 
 export type PlanFeature =
   | "dashboard"
@@ -19,77 +14,19 @@ export type PlanFeature =
   | "automations";
 
 export const PLANS = {
-  FREE: {
-    id: "FREE" as SubscriptionPlan,
-    name: "Free",
-    price: 0,
-    priceId: undefined,
-    credits: 10,
-    features: [
-      "Dashboard e projetos",
-      "Conceitos IA (limite)",
-      "Sem Render IA",
-      "Sem CRM / WhatsApp",
-    ],
-    limits: {
-      projects: 2,
-      renders: 0,
-      concepts: 5,
-      automations: 0,
-      teamMembers: 1,
-    },
-  },
-  BASIC: {
-    id: "BASIC" as SubscriptionPlan,
-    name: "Basic",
-    price: 97,
-    priceId: process.env.STRIPE_PRICE_BASIC ?? process.env.STRIPE_PRICE_STARTER,
-    credits: 50,
-    features: [
-      "Tudo do Free",
-      "Orçamentos e PDF",
-      "Mais conceitos e projetos",
-      "Sem Render IA / CRM",
-    ],
-    limits: {
-      projects: 10,
-      renders: 0,
-      concepts: 30,
-      automations: 0,
-      teamMembers: 2,
-    },
-  },
-  PRO: {
-    id: "PRO" as SubscriptionPlan,
-    name: "Pro",
-    price: 197,
-    priceId: process.env.STRIPE_PRICE_PRO,
-    credits: 200,
-    features: [
-      "Render IA ilimitado*",
-      "CRM Kanban completo",
-      "Orçamentos premium",
-      "200 créditos/mês",
-    ],
-    limits: {
-      projects: -1,
-      renders: -1,
-      concepts: -1,
-      automations: 0,
-      teamMembers: 5,
-    },
-  },
   PREMIUM: {
     id: "PREMIUM" as SubscriptionPlan,
-    name: "Premium",
-    price: 397,
-    priceId: process.env.STRIPE_PRICE_PREMIUM,
-    credits: 500,
+    name: "PREMIUM",
+    price: 104.99,
+    priceId: null,
+    credits: -1,
     features: [
-      "Tudo do Pro",
-      "WhatsApp + automações",
-      "500 créditos/mês",
-      "Suporte prioritário",
+      "Dashboard completo",
+      "Projetos ilimitados",
+      "Conceitos IA ilimitados",
+      "Render IA ilimitado",
+      "CRM e WhatsApp",
+      "Automações",
     ],
     limits: {
       projects: -1,
@@ -105,12 +42,12 @@ export type PlanKey = keyof typeof PLANS;
 
 /** Plano mínimo exigido por recurso */
 export const FEATURE_MIN_PLAN: Record<PlanFeature, SubscriptionPlan> = {
-  dashboard: "FREE",
-  projects: "FREE",
-  concepts: "FREE",
-  budgets: "BASIC",
-  renders: "PRO",
-  crm: "PRO",
+  dashboard: "PREMIUM",
+  projects: "PREMIUM",
+  concepts: "PREMIUM",
+  budgets: "PREMIUM",
+  renders: "PREMIUM",
+  crm: "PREMIUM",
   whatsapp: "PREMIUM",
   automations: "PREMIUM",
 };
@@ -127,32 +64,39 @@ export const FEATURE_LABELS: Record<PlanFeature, string> = {
 };
 
 export function getPlanLimits(plan: SubscriptionPlan) {
-  const key = normalizePlanKey(plan);
+  const key = normalizePlanKey(plan) as keyof typeof PLANS;
   return PLANS[key].limits;
 }
 
 export function getPlanCredits(plan: SubscriptionPlan) {
-  const key = normalizePlanKey(plan);
+  const key = normalizePlanKey(plan) as keyof typeof PLANS;
   return PLANS[key].credits;
 }
 
-export function normalizePlanKey(plan: string): PlanKey {
-  if (plan === "STARTER") return "BASIC";
+export function normalizePlanKey(plan: string): string {
+  if (
+    plan === "STARTER" ||
+    plan === "FREE" ||
+    plan === "BASIC" ||
+    plan === "PRO" ||
+    plan === "ENTERPRISE"
+  ) {
+    return "PREMIUM";
+  }
   if (plan in PLANS) return plan as PlanKey;
-  return "FREE";
+  return "PREMIUM";
 }
 
 export function planRank(plan: SubscriptionPlan | string): number {
   const key = normalizePlanKey(plan);
-  return PLAN_ORDER.indexOf(key);
+  return PLAN_ORDER.indexOf(key as SubscriptionPlan);
 }
 
 export function hasPlanAccess(
   currentPlan: SubscriptionPlan | string,
   feature: PlanFeature
 ): boolean {
-  const required = FEATURE_MIN_PLAN[feature];
-  return planRank(currentPlan) >= planRank(required);
+  return true;
 }
 
 export function getRequiredPlanForFeature(

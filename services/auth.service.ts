@@ -76,9 +76,9 @@ export async function syncUserFromSupabase(params: SyncUserParams) {
             },
             subscription: {
               create: {
-                plan: SubscriptionPlan.FREE,
-                status: SubscriptionStatus.ACTIVE,
-                credits: getPlanCredits(SubscriptionPlan.FREE),
+                plan: SubscriptionPlan.PRO,
+                status: SubscriptionStatus.INCOMPLETE,
+                credits: 0,
                 creditsUsed: 0,
                 currentPeriodStart: new Date(),
                 currentPeriodEnd: null,

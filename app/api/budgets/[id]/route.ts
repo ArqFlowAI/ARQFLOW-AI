@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth/session";
+import { assertPlanFeature } from "@/lib/billing/plan-guard";
 import { getBudget } from "@/services/budget.service";
 import { budgetRepository } from "@/repositories/budget.repository";
 import { handleApiError } from "@/lib/errors";
@@ -12,6 +13,8 @@ export async function GET(
     if (!session) {
       return Response.json({ error: "Não autenticado" }, { status: 401 });
     }
+
+    await assertPlanFeature(session.organizationId, "budgets");
 
     const { id } = await params;
     const budget = await getBudget(id, session.organizationId);
@@ -30,6 +33,8 @@ export async function DELETE(
     if (!session) {
       return Response.json({ error: "Não autenticado" }, { status: 401 });
     }
+
+    await assertPlanFeature(session.organizationId, "budgets");
 
     const { id } = await params;
     await budgetRepository.delete(id, session.organizationId);

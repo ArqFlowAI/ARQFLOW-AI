@@ -1,7 +1,7 @@
 import { conceptRepository } from "@/repositories/concept.repository";
 import { generateArchitecturalConcept } from "@/services/openai.service";
 import { consumeCredits } from "@/services/credits.service";
-import { assertPlanLimit } from "@/lib/billing/plan-guard";
+import { assertPlanFeature, assertPlanLimit } from "@/lib/billing/plan-guard";
 import { CONCEPT_CREDIT_COST } from "@/lib/concepts/constants";
 import { conceptSchema, type ConceptInput } from "@/utils/validations";
 import { prisma } from "@/lib/prisma";
@@ -22,6 +22,7 @@ export async function generateConcept(params: {
   userId: string;
   input: ConceptInput;
 }) {
+  await assertPlanFeature(params.organizationId, "concepts");
   await assertPlanLimit(params.organizationId, "concepts", () =>
     prisma.concept.count({ where: { organizationId: params.organizationId } })
   );

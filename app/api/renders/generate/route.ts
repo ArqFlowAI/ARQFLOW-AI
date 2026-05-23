@@ -3,6 +3,7 @@ import {
   createAndQueueRender,
   parseRenderInput,
 } from "@/services/render.service";
+import { assertPlanFeature } from "@/lib/billing/plan-guard";
 import { handleApiError } from "@/lib/errors";
 
 export async function POST(request: Request) {
@@ -11,6 +12,8 @@ export async function POST(request: Request) {
     if (!session) {
       return Response.json({ error: "Não autenticado" }, { status: 401 });
     }
+
+    await assertPlanFeature(session.organizationId, "renders");
 
     const body = await request.json();
     const parsed = parseRenderInput(body);

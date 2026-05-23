@@ -14,7 +14,7 @@ export default async function BillingPage() {
         <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-brand-light/20 blur-3xl" />
         <PageHeader
           title="Billing"
-          description="Planos, créditos IA, assinatura Stripe/Kiwify e histórico de pagamentos"
+          description="Plano Premium único — R$104,99/mês. Pagamento gerenciado fora do produto."
           className="relative border-0 p-0"
         />
       </div>

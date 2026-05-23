@@ -82,7 +82,7 @@ export const billingRepository = {
       create: {
         organizationId,
         plan: data.plan,
-        status: data.status ?? "TRIALING",
+        status: data.status ?? "INCOMPLETE",
         credits,
         billingProvider: data.billingProvider,
         stripeCustomerId: data.stripeCustomerId,

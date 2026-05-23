@@ -19,8 +19,10 @@ export function BillingCredits({
   usageByUser: BillingUsageByUserDto[];
   usageByType: { type: string; amount: number }[];
 }) {
-  const pct =
-    creditsTotal > 0 ? Math.round((creditsUsed / creditsTotal) * 100) : 0;
+  const unlimited = creditsTotal <= 0;
+  const pct = unlimited ? 0 : Math.round((creditsUsed / creditsTotal) * 100);
+  const creditsLabel = unlimited ? "Ilimitado" : creditsRemaining;
+  const usageLabel = unlimited ? "Ilimitado" : `${creditsUsed} de ${creditsTotal}`;
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">
@@ -34,18 +36,16 @@ export function BillingCredits({
               <Zap className="h-5 w-5 text-brand-beige" />
               <span className="text-sm text-brand-beige/80">Créditos IA</span>
             </div>
-            <p className="mt-3 font-display text-4xl font-bold">
-              {creditsRemaining}
-            </p>
+            <p className="mt-3 font-display text-4xl font-bold">{creditsLabel}</p>
             <p className="text-sm text-brand-beige/70">disponíveis</p>
             <div className="mt-4 h-2 rounded-full bg-brand-black/40 overflow-hidden">
               <div
                 className="h-full bg-brand-beige transition-all"
-                style={{ width: `${100 - pct}%` }}
+                style={{ width: `${unlimited ? 100 : 100 - pct}%` }}
               />
             </div>
             <p className="mt-2 text-xs text-brand-beige/60">
-              {creditsUsed} de {creditsTotal} usados no período
+              {usageLabel} usados no período
             </p>
           </div>
           <CardContent className="pt-4 space-y-2 text-sm">

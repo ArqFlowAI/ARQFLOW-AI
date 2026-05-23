@@ -18,8 +18,8 @@ export function UpgradeGatePage({
   currentPlan: string;
   fromPath?: string;
 }) {
-  const target = PLANS[normalizePlanKey(requiredPlan)];
-  const current = PLANS[normalizePlanKey(currentPlan)];
+  const target = PLANS[normalizePlanKey(requiredPlan) as keyof typeof PLANS];
+  const current = PLANS[normalizePlanKey(currentPlan) as keyof typeof PLANS];
   const featureLabel = FEATURE_LABELS[feature];
 
   return (
@@ -47,10 +47,8 @@ export function UpgradeGatePage({
             Plano {target.name}
           </CardTitle>
           <p className="text-3xl font-bold font-display">
-            {target.price === 0 ? "Grátis" : `R$${target.price}`}
-            {target.price > 0 && (
-              <span className="text-sm font-normal text-brand-dark/50">/mês</span>
-            )}
+            {`R$${target.price}`}
+            <span className="text-sm font-normal text-brand-dark/50">/mês</span>
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
