@@ -38,14 +38,14 @@ const actions = [
     description: "Adicionar ao pipeline CRM",
     href: "/crm",
     icon: Users,
-    cost: "Grátis",
+    cost: "Incluso",
   },
   {
     title: "WhatsApp",
     description: "Disparar automação",
     href: "/whatsapp",
     icon: MessageCircle,
-    cost: "Pro+",
+    cost: "Incluso",
   },
 ];
 

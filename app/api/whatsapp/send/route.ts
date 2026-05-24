@@ -2,7 +2,6 @@ import { getSession } from "@/lib/auth/session";
 import { handleApiError, AppError } from "@/lib/errors";
 import { rateLimit } from "@/lib/rate-limit";
 import { sendWhatsAppMessage } from "@/services/whatsapp.service";
-import { assertFeature } from "@/lib/billing/plan-guard";
 import { z } from "zod";
 
 const schema = z.object({
@@ -23,7 +22,6 @@ export async function POST(request: Request) {
     if (!success) throw new AppError("Rate limit exceeded", 429);
 
     const body = schema.parse(await request.json());
-    await assertFeature(session.organizationId, "whatsapp");
 
     const result = await sendWhatsAppMessage({
       organizationId: session.organizationId,

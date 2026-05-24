@@ -1,7 +1,6 @@
 import { renderRepository } from "@/repositories/render.repository";
 import { generateRender } from "@/services/replicate.service";
 import { consumeCredits } from "@/services/credits.service";
-import { assertPlanFeature, assertPlanLimit } from "@/lib/billing/plan-guard";
 import { buildRenderPrompt } from "@/lib/renders/prompts";
 import { RENDER_CREDIT_COST } from "@/lib/renders/constants";
 import { renderSchema, type RenderInput } from "@/utils/validations";
@@ -29,11 +28,6 @@ export async function createAndQueueRender(params: {
   input: RenderInput;
 }) {
   const fullPrompt = buildRenderPrompt(params.input);
-
-  await assertPlanFeature(params.organizationId, "renders");
-  await assertPlanLimit(params.organizationId, "renders", () =>
-    prisma.render.count({ where: { organizationId: params.organizationId } })
-  );
 
   await consumeCredits(
     params.organizationId,

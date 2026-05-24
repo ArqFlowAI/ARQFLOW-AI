@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { syncUserFromSupabase } from "@/services/auth.service";
 import type { SessionUser } from "@/types";
 import { AppError } from "@/lib/errors";
-import { normalizeSubscriptionPlan } from "@/lib/billing/plan-access";
 import type { SubscriptionStatus } from "@prisma/client";
 
 export async function getSupabaseAuthUser() {
@@ -69,7 +68,8 @@ export async function getSession(): Promise<SessionUser | null> {
   const org = membership.organization;
   const sub = org.subscription;
 
-  const plan = normalizeSubscriptionPlan(sub?.plan ?? "FREE");
+  const plan = "PREMIUM" as const;
+  const creditsRemaining = -1;
 
   return {
     id: user.id,
@@ -80,8 +80,8 @@ export async function getSession(): Promise<SessionUser | null> {
     organizationName: org.name,
     role: membership.role,
     plan,
-    subscriptionStatus: (sub?.status ?? "ACTIVE") as SubscriptionStatus,
-    credits: (sub?.credits ?? 10) - (sub?.creditsUsed ?? 0),
+    subscriptionStatus: "ACTIVE" as SubscriptionStatus,
+    credits: creditsRemaining,
     onboardingDone: user.onboardingDone,
   };
 }

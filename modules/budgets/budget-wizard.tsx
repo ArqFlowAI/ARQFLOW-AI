@@ -51,7 +51,7 @@ export function BudgetWizard({ credits }: { credits: number }) {
   const [estimate, setEstimate] = useState<BudgetEstimateResult | null>(null);
   const [items, setItems] = useState<BudgetItem[]>([]);
 
-  const canSubmit = credits >= BUDGET_CREDIT_COST && items.length > 0;
+  const canSubmit = (credits < 0 || credits >= BUDGET_CREDIT_COST) && items.length > 0;
 
   const total = useMemo(() => {
     const sub = items.reduce((s, i) => s + i.total, 0);
@@ -168,7 +168,7 @@ export function BudgetWizard({ credits }: { credits: number }) {
               {step === 3 && "Gerar proposta"}
             </CardTitle>
             <p className="text-xs text-brand-dark/50">
-              {BUDGET_CREDIT_COST} crédito · {credits} disponíveis
+              {BUDGET_CREDIT_COST} crédito · {credits < 0 ? "Ilimitado" : credits} disponíveis
             </p>
           </CardHeader>
           <CardContent className="space-y-5">

@@ -1,7 +1,6 @@
 "use server";
 
 import { requireSession } from "@/lib/auth/session";
-import { assertPlanFeature } from "@/lib/billing/plan-guard";
 import { leadRepository } from "@/repositories/lead.repository";
 import { leadSchema, leadUpdateSchema } from "@/utils/validations";
 import type { LeadPriority, LeadStage } from "@prisma/client";
@@ -14,7 +13,7 @@ function revalidateCrm() {
 }
 
 async function assertCrmAccess(organizationId: string) {
-  await assertPlanFeature(organizationId, "crm");
+  return;
 }
 
 export async function createLeadAction(formData: FormData) {

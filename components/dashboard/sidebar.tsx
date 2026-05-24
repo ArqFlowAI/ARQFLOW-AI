@@ -22,8 +22,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { dashboardNav, navGroups } from "@/config/dashboard-nav";
-import { hasPlanAccess, FEATURE_MIN_PLAN, PLANS, normalizePlanKey } from "@/config/plans";
-import type { PlanFeature } from "@/config/plans";
 import { useUIStore } from "@/store/ui.store";
 import { logoutAction } from "@/actions/auth.actions";
 import type { SessionUser } from "@/types";
@@ -50,8 +48,6 @@ export function Sidebar({ session }: { session: SessionUser }) {
     setSidebarOpen,
     toggleSidebarCollapsed,
   } = useUIStore();
-  const planKey = normalizePlanKey(session.plan) as keyof typeof PLANS;
-  const plan = PLANS[planKey];
   const collapsed = sidebarCollapsed;
 
   return (
@@ -136,63 +132,30 @@ export function Sidebar({ session }: { session: SessionUser }) {
                         : pathname === item.href ||
                           pathname.startsWith(item.href + "/");
 
-                    const feature = item.feature as PlanFeature | undefined;
-                    const locked =
-                      feature &&
-                      !hasPlanAccess(session.plan, feature);
-                    const requiredPlan = feature
-                      ? FEATURE_MIN_PLAN[feature]
-                      : null;
-                    const href = locked
-                      ? `/billing/upgrade?feature=${feature}&plan=${requiredPlan}&from=${encodeURIComponent(item.href)}`
-                      : item.href;
-
                     return (
                       <Link
                         key={item.href}
-                        href={href}
-                        title={
-                          collapsed
-                            ? locked
-                              ? `${item.title} — upgrade`
-                              : item.title
-                            : undefined
-                        }
+                        href={item.href}
+                        title={collapsed ? item.title : undefined}
                         onClick={() => setSidebarOpen(false)}
                         className={cn(
                           "group relative flex items-center gap-3 rounded-xl text-sm font-medium transition-all",
                           collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5",
-                          active && !locked
+                          active
                             ? "bg-brand-dark text-brand-bg shadow-md"
-                            : locked
-                              ? "text-brand-dark/40 hover:bg-brand-beige/30"
-                              : "text-brand-dark/65 hover:bg-brand-beige/50 hover:text-brand-black dark:hover:bg-brand-dark/40"
+                            : "text-brand-dark/65 hover:bg-brand-beige/50 hover:text-brand-black dark:hover:bg-brand-dark/40"
                         )}
                       >
-                        {active && !locked && (
+                        {active && (
                           <span className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r-full bg-brand-beige" />
                         )}
                         <Icon
                           className={cn(
                             "h-4 w-4 shrink-0",
-                            active && !locked
-                              ? "text-brand-beige"
-                              : "text-brand-dark/70",
-                            locked && "opacity-50"
+                            active ? "text-brand-beige" : "text-brand-dark/70"
                           )}
                         />
-                        {!collapsed && (
-                          <>
-                            <span className={cn(locked && "opacity-60")}>
-                              {item.title}
-                            </span>
-                            {locked && requiredPlan && (
-                              <span className="ml-auto rounded bg-brand-beige/80 px-1.5 py-0.5 text-[9px] font-semibold uppercase text-brand-dark">
-                                {PLANS[normalizePlanKey(requiredPlan) as keyof typeof PLANS].name}
-                              </span>
-                            )}
-                          </>
-                        )}
+                        {!collapsed && <span>{item.title}</span>}
                       </Link>
                     );
                   })}
@@ -214,28 +177,22 @@ export function Sidebar({ session }: { session: SessionUser }) {
                   Créditos IA
                 </span>
                 <span className="rounded-full bg-brand-dark px-2 py-0.5 text-[10px] font-semibold text-brand-bg">
-                  {plan?.name ?? session.plan}
+                  {session.plan}
                 </span>
               </div>
               <p className="mt-2 font-display text-2xl font-bold text-brand-dark">
                 {session.credits}
               </p>
-              <Link
-                href="/dashboard/billing"
-                className="mt-2 block text-center text-xs font-medium text-brand-dark hover:underline"
-                onClick={() => setSidebarOpen(false)}
-              >
-                Fazer upgrade →
-              </Link>
+              <div className="mt-2 text-center text-xs font-medium text-brand-dark">
+                {session.credits < 0 ? "Créditos ilimitados" : `${session.credits} créditos disponíveis`}
+              </div>
             </div>
           ) : (
-            <Link
-              href="/dashboard/billing"
-              title={`${session.credits} créditos`}
-              className="flex justify-center rounded-xl bg-brand-dark p-2.5 text-brand-bg"
-            >
-              <span className="text-xs font-bold">{session.credits}</span>
-            </Link>
+            <div className="flex justify-center rounded-xl bg-brand-dark p-2.5 text-brand-bg">
+              <span className="text-xs font-bold">
+                {session.credits < 0 ? "∞" : session.credits}
+              </span>
+            </div>
           )}
 
           {!collapsed && (

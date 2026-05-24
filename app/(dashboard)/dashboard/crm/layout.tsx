@@ -1,13 +1,7 @@
-import { PlanRouteGuard } from "@/components/billing/plan-route-guard";
-
-export default function DashboardCrmLayout({
+export default function DashboardCRMLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <PlanRouteGuard feature="crm" returnPath="/dashboard/crm">
-      {children}
-    </PlanRouteGuard>
-  );
+  return <>{children}</>;
 }

@@ -2,7 +2,6 @@ import { getSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { settingsSchema } from "@/utils/validations";
 import { handleApiError } from "@/lib/errors";
-import { assertPlanFeature } from "@/lib/billing/plan-guard";
 
 export async function PATCH(request: Request) {
   try {
@@ -54,10 +53,6 @@ export async function PATCH(request: Request) {
       twilioEnabled !== undefined ||
       whatsappProvider
     ) {
-      // Enforce WhatsApp settings only for organizations with the WhatsApp feature
-      if (whatsappEnabled !== undefined || zapiInstanceId || twilioEnabled !== undefined || whatsappProvider) {
-        await assertPlanFeature(session.organizationId, "whatsapp");
-      }
       await prisma.organizationSettings.upsert({
         where: { organizationId: session.organizationId },
         create: {

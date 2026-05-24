@@ -22,7 +22,7 @@ export function RenderGenerator({ credits }: { credits: number }) {
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState("photoreal");
   const [aspectRatio, setAspectRatio] = useState("16:9");
-  const canGenerate = credits >= RENDER_CREDIT_COST;
+  const canGenerate = credits < 0 || credits >= RENDER_CREDIT_COST;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -57,7 +57,7 @@ export function RenderGenerator({ credits }: { credits: number }) {
             canGenerate ? "text-emerald-700" : "text-red-600"
           )}
         >
-          {credits} créditos disponíveis
+          {credits < 0 ? "Ilimitado" : credits} créditos disponíveis
         </p>
       </CardHeader>
       <CardContent>
@@ -162,7 +162,7 @@ export function RenderGenerator({ credits }: { credits: number }) {
 
           {!canGenerate && (
             <p className="text-center text-xs text-red-600">
-              Créditos insuficientes. Faça upgrade em Billing.
+              Créditos insuficientes.
             </p>
           )}
         </form>

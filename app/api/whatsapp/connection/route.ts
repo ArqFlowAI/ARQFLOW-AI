@@ -1,5 +1,4 @@
 import { getSession } from "@/lib/auth/session";
-import { assertPlanFeature } from "@/lib/billing/plan-guard";
 import { handleApiError } from "@/lib/errors";
 import { refreshWhatsAppConnection } from "@/services/whatsapp.service";
 import { getWhatsAppPageData } from "@/services/whatsapp-dashboard.service";
@@ -10,8 +9,6 @@ export async function GET() {
     if (!session) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    await assertPlanFeature(session.organizationId, "whatsapp");
 
     const { connection } = await getWhatsAppPageData(session.organizationId);
     return Response.json({ success: true, data: connection });
@@ -26,8 +23,6 @@ export async function POST() {
     if (!session) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    await assertPlanFeature(session.organizationId, "whatsapp");
 
     const connection = await refreshWhatsAppConnection(
       session.organizationId

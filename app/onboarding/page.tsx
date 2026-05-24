@@ -19,16 +19,37 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [focus, setFocus] = useState("");
+  const [organizationName, setOrganizationName] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const canContinue =
+    (step === 0 && organizationName.trim().length > 0) ||
+    (step === 1 && focus.length > 0) ||
+    step === 2;
 
   async function complete() {
     setLoading(true);
-    await fetch("/api/onboarding", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ focus }),
-    });
-    router.push("/dashboard");
+    setError(null);
+
+    try {
+      const response = await fetch("/api/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ focus, organizationName }),
+      });
+
+      if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.error || "Erro ao salvar dados. Tente novamente.");
+      }
+
+      router.push("/dashboard");
+    } catch (err) {
+      setError((err as Error).message || "Erro inesperado.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -47,11 +68,29 @@ export default function OnboardingPage() {
           <p className="text-sm text-brand-dark/70">{steps[step].desc}</p>
         </CardHeader>
         <CardContent>
+          {error && (
+            <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+              {error}
+            </div>
+          )}
+          {step === 0 && (
+            <div>
+              <Label htmlFor="organizationName">Nome do escritório</Label>
+              <Input
+                id="organizationName"
+                value={organizationName}
+                onChange={(event) => setOrganizationName(event.target.value)}
+                className="mt-1"
+                placeholder="Seu escritório"
+              />
+            </div>
+          )}
           {step === 1 && (
             <div className="grid grid-cols-2 gap-3">
               {focuses.map((f) => (
                 <button
                   key={f}
+                  type="button"
                   onClick={() => setFocus(f)}
                   className={`rounded-lg border p-4 text-sm transition-all ${
                     focus === f
@@ -64,26 +103,22 @@ export default function OnboardingPage() {
               ))}
             </div>
           )}
-          {step === 0 && (
-            <div>
-              <Label>Nome do escritório</Label>
-              <Input className="mt-1" placeholder="Seu escritório" />
-            </div>
-          )}
           {step === 2 && (
-            <p className="text-center text-brand-dark/70 py-8">
-              Tudo pronto! Comece gerando seu primeiro conceito ou render.
-            </p>
+            <div className="space-y-4 py-8 text-center text-brand-dark/70">
+              <p>Seu escritório foi configurado com o plano PREMIUM.</p>
+              <p>Todos os recursos estão liberados: CRM, WhatsApp, renders IA e automações.</p>
+            </div>
           )}
           <div className="mt-8 flex justify-between">
             {step > 0 && (
-              <Button variant="outline" onClick={() => setStep(step - 1)}>
+              <Button variant="outline" type="button" onClick={() => setStep(step - 1)}>
                 Voltar
               </Button>
             )}
             <Button
+              type="button"
               className="ml-auto"
-              disabled={step === 1 && !focus}
+              disabled={!canContinue || loading}
               onClick={() => {
                 if (step < 2) setStep(step + 1);
                 else complete();

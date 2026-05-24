@@ -16,7 +16,6 @@ export const dashboardNav: DashboardNavItem[] = [
   { title: "CRM", href: "/crm", icon: "Users", feature: "crm" },
   { title: "WhatsApp", href: "/whatsapp", icon: "MessageCircle", feature: "whatsapp" },
   { title: "Automações", href: "/dashboard/automacoes", icon: "Workflow", feature: "automations" },
-  { title: "Billing", href: "/billing", icon: "CreditCard" },
   { title: "Configurações", href: "/dashboard/configuracoes", icon: "Settings" },
 ];
 
@@ -24,5 +23,5 @@ export const navGroups = [
   { label: "Principal", items: ["Dashboard", "Projetos"] },
   { label: "Inteligência", items: ["Render IA", "Conceitos", "Orçamentos"] },
   { label: "Comercial", items: ["CRM", "WhatsApp", "Automações"] },
-  { label: "Conta", items: ["Billing", "Configurações"] },
+  { label: "Conta", items: ["Configurações"] },
 ] as { label: string; items: string[] }[];

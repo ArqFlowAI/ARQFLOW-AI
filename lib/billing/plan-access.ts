@@ -35,7 +35,9 @@ export function normalizeSubscriptionPlan(
   return "PREMIUM";
 }
 
-export function isSubscriptionActive(): boolean {
+export function isSubscriptionActive(
+  status: SubscriptionStatus | string
+): boolean {
   return true;
 }
 
@@ -54,6 +56,6 @@ export function checkPlanAccess(
     feature,
     currentPlan,
     requiredPlan,
-    requiredPlanName: PLANS[normalizePlanKey(requiredPlan)].name,
+    requiredPlanName: PLANS[normalizePlanKey(requiredPlan) as keyof typeof PLANS].name,
   };
 }

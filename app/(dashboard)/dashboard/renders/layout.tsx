@@ -1,13 +1,7 @@
-import { PlanRouteGuard } from "@/components/billing/plan-route-guard";
-
-export default function RendersLayout({
+export default function DashboardRendersLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <PlanRouteGuard feature="renders" returnPath="/dashboard/renders">
-      {children}
-    </PlanRouteGuard>
-  );
+  return <>{children}</>;
 }

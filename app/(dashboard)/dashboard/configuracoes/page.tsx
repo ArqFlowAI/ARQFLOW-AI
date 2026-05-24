@@ -1,5 +1,6 @@
 import { getSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
+import { normalizePlanKey } from "@/config/plans";
 import { SettingsForm } from "@/modules/settings/settings-form";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,8 +26,10 @@ export default async function ConfiguracoesPage() {
             <CardTitle className="text-sm font-medium text-brand-dark/60">Plano</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-display text-xl font-bold">{org?.subscription?.plan ?? "PRO"}</p>
-            <Badge className="mt-2">{org?.subscription?.status ?? "INCOMPLETE"}</Badge>
+            <p className="font-display text-xl font-bold">
+              {normalizePlanKey(org?.subscription?.plan ?? "PREMIUM")}
+            </p>
+            <Badge className="mt-2">{org?.subscription?.status ?? "ACTIVE"}</Badge>
           </CardContent>
         </Card>
         <Card className="border-brand-light/15">

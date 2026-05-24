@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { Zap, ArrowUpRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Zap } from "lucide-react";
 
 export function CreditsWidget({
   remaining,
@@ -24,7 +22,9 @@ export function CreditsWidget({
             Créditos IA · Plano {plan}
           </span>
         </div>
-        <p className="mt-4 font-display text-4xl font-bold">{remaining}</p>
+        <p className="mt-4 font-display text-4xl font-bold">
+          {remaining < 0 ? "Ilimitado" : remaining}
+        </p>
         <p className="text-sm text-brand-beige/70">créditos disponíveis</p>
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-brand-black/40">
           <div
@@ -35,15 +35,6 @@ export function CreditsWidget({
         <p className="mt-2 text-xs text-brand-beige/60">
           {used} de {total} utilizados este período
         </p>
-        <Button
-          size="sm"
-          className="mt-4 bg-brand-beige text-brand-black hover:bg-brand-bg"
-          asChild
-        >
-          <Link href="/billing">
-            Fazer upgrade <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
-          </Link>
-        </Button>
       </div>
     </div>
   );

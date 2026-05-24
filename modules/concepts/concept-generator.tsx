@@ -25,7 +25,7 @@ export function ConceptGenerator({ credits }: { credits: number }) {
   const [customEnv, setCustomEnv] = useState(false);
   const [customStyle, setCustomStyle] = useState(false);
 
-  const canGenerate = credits >= CONCEPT_CREDIT_COST;
+  const canGenerate = credits < 0 || credits >= CONCEPT_CREDIT_COST;
 
   function handleSubmit(formData: FormData) {
     setResult(null);
@@ -61,7 +61,7 @@ export function ConceptGenerator({ credits }: { credits: number }) {
               canGenerate ? "text-emerald-700" : "text-red-600"
             )}
           >
-            {credits} créditos disponíveis
+            {credits < 0 ? "Ilimitado" : credits} créditos disponíveis
           </p>
         </CardHeader>
         <CardContent>
@@ -203,7 +203,7 @@ export function ConceptGenerator({ credits }: { credits: number }) {
 
             {!canGenerate && (
               <p className="text-center text-xs text-red-600">
-                Créditos insuficientes. Faça upgrade em Billing.
+                Créditos insuficientes.
               </p>
             )}
           </form>

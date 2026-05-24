@@ -1,13 +1,7 @@
-import { PlanRouteGuard } from "@/components/billing/plan-route-guard";
-
-export default function OrcamentosLayout({
+export default function DashboardBudgetsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <PlanRouteGuard feature="budgets" returnPath="/dashboard/orcamentos">
-      {children}
-    </PlanRouteGuard>
-  );
+  return <>{children}</>;
 }

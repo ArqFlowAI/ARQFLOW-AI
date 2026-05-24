@@ -12,16 +12,16 @@ export async function getBillingPageData(
     billingRepository.getUsageByType(organizationId),
   ]);
 
-  const credits = sub?.credits ?? PLANS.PREMIUM.credits;
+  const credits = sub?.credits ?? -1;
   const creditsUsed = sub?.creditsUsed ?? 0;
 
   return {
     subscription: {
-      plan: sub?.plan ? sub.plan : "PREMIUM",
+      plan: sub?.plan ?? "PREMIUM",
       status: sub?.status ?? "ACTIVE",
       credits,
       creditsUsed,
-      creditsRemaining: Math.max(0, credits - creditsUsed),
+      creditsRemaining: credits === -1 ? -1 : Math.max(0, credits - creditsUsed),
       currentPeriodStart: sub?.currentPeriodStart?.toISOString() ?? null,
       currentPeriodEnd: sub?.currentPeriodEnd?.toISOString() ?? null,
       cancelAtPeriodEnd: sub?.cancelAtPeriodEnd ?? false,

@@ -1,7 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { AUTH_ROUTES, isPublicApiRoute } from "@/lib/auth/constants";
-import { checkPlanInMiddleware } from "@/lib/billing/middleware-plan";
 
 type CookieToSet = { name: string; value: string; options?: CookieOptions };
 
@@ -82,11 +81,6 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone();
     url.pathname = AUTH_ROUTES.dashboard;
     return NextResponse.redirect(url);
-  }
-
-  if (user) {
-    const planBlock = await checkPlanInMiddleware(request);
-    if (planBlock) return planBlock;
   }
 
   return supabaseResponse;

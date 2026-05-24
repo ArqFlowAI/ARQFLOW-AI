@@ -1,6 +1,6 @@
 import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
-import { PLANS, getPlanCredits } from "@/config/plans";
+import { PLANS, getPlanCredits, normalizePlanKey } from "@/config/plans";
 import { SubscriptionPlan, SubscriptionStatus } from "@prisma/client";
 
 let stripeClient: Stripe | null = null;
@@ -23,7 +23,7 @@ export async function createCheckoutSession(params: {
   successUrl: string;
   cancelUrl: string;
 }) {
-  const planConfig = PLANS[params.plan];
+  const planConfig = PLANS[normalizePlanKey(params.plan) as keyof typeof PLANS];
   if (!planConfig.priceId) throw new Error("Price ID não configurado");
 
   const sub = await prisma.subscription.findUnique({
@@ -124,7 +124,7 @@ export async function changeStripePlan(params: {
   plan: SubscriptionPlan;
   organizationId: string;
 }) {
-  const planConfig = PLANS[params.plan];
+  const planConfig = PLANS[normalizePlanKey(params.plan) as keyof typeof PLANS];
   if (!planConfig.priceId) {
     throw new Error("Price ID não configurado para o plano");
   }

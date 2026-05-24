@@ -1,5 +1,4 @@
 import { getSession } from "@/lib/auth/session";
-import { assertPlanFeature } from "@/lib/billing/plan-guard";
 import { handleApiError, AppError } from "@/lib/errors";
 import { whatsappRepository } from "@/repositories/whatsapp.repository";
 import { getWhatsAppPageData } from "@/services/whatsapp-dashboard.service";
@@ -20,8 +19,6 @@ export async function GET() {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await assertPlanFeature(session.organizationId, "whatsapp");
-
     const { automations } = await getWhatsAppPageData(session.organizationId);
     return Response.json({ success: true, data: automations });
   } catch (error) {
@@ -35,8 +32,6 @@ export async function PATCH(request: Request) {
     if (!session) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
-
-    await assertPlanFeature(session.organizationId, "whatsapp");
 
     const body = patchSchema.parse(await request.json());
     const updated = await whatsappRepository.updateAutomation(

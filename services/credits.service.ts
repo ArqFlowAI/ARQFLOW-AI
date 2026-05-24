@@ -11,28 +11,19 @@ export async function consumeCredits(
     where: { organizationId },
   });
 
-  if (!sub) throw new AppError("Assinatura não encontrada", 404);
-
-  const remaining = sub.credits - sub.creditsUsed;
-  if (remaining < amount) {
-    throw new AppError(
-      "Créditos insuficientes. Faça upgrade do seu plano.",
-      402,
-      "INSUFFICIENT_CREDITS"
-    );
-  }
-
-  await prisma.$transaction([
-    prisma.subscription.update({
+  if (sub && sub.credits !== -1) {
+    await prisma.subscription.update({
       where: { organizationId },
       data: { creditsUsed: { increment: amount } },
-    }),
-    prisma.usageRecord.create({
-      data: { organizationId, userId, type, amount },
-    }),
-  ]);
+    });
+  }
 
-  return remaining - amount;
+  await prisma.usageRecord.create({
+    data: { organizationId, userId, type, amount },
+  });
+
+  if (!sub) return -1;
+  return sub.credits === -1 ? -1 : sub.credits - sub.creditsUsed - amount;
 }
 
 export async function resetMonthlyCredits(organizationId: string, credits: number) {

@@ -1,17 +1,14 @@
 # Planos e controle de acesso — ARQFLOW AI
 
-## Planos
+## Plano oficial
 
 | Plano | Preço | Render IA | Orçamentos | CRM | WhatsApp | Automações |
 |-------|-------|-----------|------------|-----|----------|------------|
-| **FREE** | R$0 | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **BASIC** | R$97 | ❌ | ✅ | ❌ | ❌ | ❌ |
-| **PRO** | R$197 | ✅ | ✅ | ✅ | ❌ | ❌ |
-| **PREMIUM** | R$397 | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **PREMIUM** | R$104,99 | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ## Cadastro
 
-Novos usuários recebem `plan: FREE`, `status: ACTIVE` em `services/auth.service.ts`.
+Novos usuários recebem `plan: PREMIUM`, `status: ACTIVE` em `services/auth.service.ts`.
 
 ## Camadas de proteção
 

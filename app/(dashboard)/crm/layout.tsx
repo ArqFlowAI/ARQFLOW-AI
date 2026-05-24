@@ -1,13 +1,7 @@
-import { PlanRouteGuard } from "@/components/billing/plan-route-guard";
-
-export default function CrmLayout({
+export default function CRMLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <PlanRouteGuard feature="crm" returnPath="/crm">
-      {children}
-    </PlanRouteGuard>
-  );
+  return <>{children}</>;
 }

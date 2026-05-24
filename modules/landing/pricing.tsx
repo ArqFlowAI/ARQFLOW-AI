@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PLANS } from "@/config/plans";
 import { cn } from "@/lib/utils";
 
-const planOrder = ["PRO"] as const;
+const planOrder = ["PREMIUM"] as const;
 
 export function Pricing() {
   return (
@@ -37,7 +37,7 @@ export function Pricing() {
                 >
                   <Card className="relative h-full border-brand-dark shadow-xl scale-100">
                     <CardHeader>
-                      <CardTitle className="font-display text-2xl">{plan.name} — R$99/mês</CardTitle>
+                      <CardTitle className="font-display text-2xl">{plan.name} — R$104,99/mês</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-3">
@@ -49,7 +49,7 @@ export function Pricing() {
                         ))}
                       </ul>
                       <Button className="mt-8 w-full" asChild>
-                        <Link href={`/cadastro?plan=pro`}>Assinar PRO</Link>
+                        <Link href="/cadastro?plan=premium">Assinar PREMIUM</Link>
                       </Button>
                     </CardContent>
                   </Card>

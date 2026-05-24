@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { dashboardNav } from "@/config/site";
 import type { SessionUser } from "@/types";
 import { cn } from "@/lib/utils";
-import { PLANS, normalizePlanKey } from "@/config/plans";
 import { useUIStore } from "@/store/ui.store";
 
 const quickLinks = [
@@ -26,7 +25,6 @@ export function Topbar({ session }: { session: SessionUser }) {
       pathname === n.href ||
       (n.href !== "/dashboard" && pathname.startsWith(n.href))
   );
-  const plan = PLANS[normalizePlanKey(session.plan) as keyof typeof PLANS];
 
   return (
     <header
@@ -53,13 +51,12 @@ export function Topbar({ session }: { session: SessionUser }) {
       </div>
 
       <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-        <Link
-          href="/dashboard/billing"
-          className="flex items-center gap-1 rounded-full bg-brand-beige/50 px-2.5 py-1 text-[10px] font-semibold text-brand-dark sm:px-3 sm:text-xs"
-        >
+        <span className="flex items-center gap-1 rounded-full bg-brand-beige/50 px-2.5 py-1 text-[10px] font-semibold text-brand-dark sm:px-3 sm:text-xs">
           <Sparkles className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-          <span className="tabular-nums">{session.credits}</span>
-        </Link>
+          <span className="tabular-nums">
+            {session.credits < 0 ? "Ilimitado" : session.credits}
+          </span>
+        </span>
 
         <Button
           variant="ghost"
@@ -80,7 +77,7 @@ export function Topbar({ session }: { session: SessionUser }) {
               {session.name ?? "Usuário"}
             </p>
             <p className="text-[10px] text-brand-dark/50">
-              {plan?.name ?? session.plan}
+              {session.plan}
             </p>
           </div>
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-brand-dark to-brand-black text-xs font-semibold text-brand-bg sm:h-9 sm:w-9">
