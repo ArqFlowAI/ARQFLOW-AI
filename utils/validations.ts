@@ -126,8 +126,8 @@ export const automationSchema = z.object({
 
 export const projectSchema = z.object({
   name: z.string().min(1, "Nome do projeto é obrigatório"),
-  clientName: z.string().optional(),
-  description: z.string().optional(),
+  clientName: z.string().optional().nullable(),
+  description: z.string().optional().nullable(),
 });
 
 export const settingsSchema = z.object({

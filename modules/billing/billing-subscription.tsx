@@ -34,7 +34,7 @@ export function BillingSubscription({
             <div>
               <p className="text-xs text-brand-dark/50">Plano</p>
               <p className="font-display text-2xl font-bold">PREMIUM</p>
-              <p className="text-sm text-brand-dark/60">R$104,99/mês · Créditos ilimitados</p>
+              <p className="text-sm text-brand-dark/60">Acesso completo · Funcionalidades ilimitadas</p>
             </div>
             <div>
               <p className="text-xs text-brand-dark/50">Créditos</p>
@@ -54,7 +54,7 @@ export function BillingSubscription({
           </div>
 
           <div className="rounded-lg border border-brand-light/20 bg-brand-beige/10 px-4 py-3 text-sm text-brand-dark/70">
-            Todos os recursos estão disponíveis no plano Premium. O pagamento é gerenciado fora do produto.
+            Todos os recursos estão disponíveis e ativados para você.
           </div>
         </CardContent>
       </Card>

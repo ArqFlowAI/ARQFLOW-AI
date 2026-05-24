@@ -41,7 +41,7 @@ export function Hero() {
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/cadastro?plan=trial">Testar grátis</Link>
+              <Link href="/cadastro">Começar agora</Link>
             </Button>
           </div>
 

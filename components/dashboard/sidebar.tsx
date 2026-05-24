@@ -174,24 +174,22 @@ export function Sidebar({ session }: { session: SessionUser }) {
             <div className="rounded-xl bg-gradient-to-br from-brand-beige/60 via-brand-light/20 to-transparent p-4 ring-1 ring-brand-light/20">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-brand-dark/70">
-                  Créditos IA
+                  Acesso
                 </span>
                 <span className="rounded-full bg-brand-dark px-2 py-0.5 text-[10px] font-semibold text-brand-bg">
-                  {session.plan}
+                  COMPLETO
                 </span>
               </div>
               <p className="mt-2 font-display text-2xl font-bold text-brand-dark">
-                {session.credits}
+                Ilimitado
               </p>
               <div className="mt-2 text-center text-xs font-medium text-brand-dark">
-                {session.credits < 0 ? "Créditos ilimitados" : `${session.credits} créditos disponíveis`}
+                Todos os recursos disponíveis
               </div>
             </div>
           ) : (
             <div className="flex justify-center rounded-xl bg-brand-dark p-2.5 text-brand-bg">
-              <span className="text-xs font-bold">
-                {session.credits < 0 ? "∞" : session.credits}
-              </span>
+              <span className="text-xs font-bold">∞</span>
             </div>
           )}
 

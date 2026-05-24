@@ -1,61 +1,22 @@
-import {
-  hasPlanAccess,
-  getRequiredPlanForFeature,
-  normalizePlanKey,
-  PLANS,
-  type PlanFeature,
-} from "@/config/plans";
-import type { SubscriptionPlan, SubscriptionStatus } from "@prisma/client";
-
+// Billing access is neutralized: all features allowed for authenticated users.
 export type PlanAccessResult = {
   allowed: boolean;
-  feature: PlanFeature;
-  currentPlan: SubscriptionPlan;
-  requiredPlan: SubscriptionPlan;
-  requiredPlanName: string;
+  feature: string;
+  currentPlan: string | null;
+  requiredPlan: string | null;
+  requiredPlanName?: string | null;
 };
 
-export function normalizeSubscriptionPlan(
-  plan: string | SubscriptionPlan
-): SubscriptionPlan {
-  if (
-    plan === "STARTER" ||
-    plan === "FREE" ||
-    plan === "BASIC" ||
-    plan === "PRO" ||
-    plan === "ENTERPRISE"
-  ) {
-    return "PREMIUM";
-  }
-
-  if (plan in PLANS) {
-    return plan as SubscriptionPlan;
-  }
-
-  return "PREMIUM";
-}
-
-export function isSubscriptionActive(
-  status: SubscriptionStatus | string
-): boolean {
-  return true;
-}
-
 export function checkPlanAccess(
-  plan: string | SubscriptionPlan,
-  status: SubscriptionStatus | string,
-  feature: PlanFeature
+  _plan: string | null,
+  _status: string | null,
+  feature: string
 ): PlanAccessResult {
-  const currentPlan = normalizeSubscriptionPlan(plan);
-  const active = isSubscriptionActive(status);
-  const allowed = active && hasPlanAccess(currentPlan, feature);
-  const requiredPlan = getRequiredPlanForFeature(feature);
-
   return {
-    allowed,
+    allowed: true,
     feature,
-    currentPlan,
-    requiredPlan,
-    requiredPlanName: PLANS[normalizePlanKey(requiredPlan) as keyof typeof PLANS].name,
+    currentPlan: null,
+    requiredPlan: null,
+    requiredPlanName: null,
   };
 }

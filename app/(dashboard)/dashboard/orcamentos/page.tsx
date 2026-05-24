@@ -24,7 +24,7 @@ export default async function OrcamentosPage() {
     <div className="space-y-10">
       <PageHeader
         title="Orçamentos"
-        description="Propostas comerciais com cálculo automático, texto IA e PDF premium — salvas no Supabase"
+        description="Propostas comerciais com cálculo automático, texto IA e PDF — salvas no Supabase"
       />
 
       <ModuleStats
@@ -52,7 +52,7 @@ export default async function OrcamentosPage() {
           Etapa 1: parâmetros · Etapa 2: itens · Etapa 3: proposta + PDF (
           {BUDGET_CREDIT_COST} crédito)
         </p>
-        <BudgetWizard credits={session!.credits} />
+        <BudgetWizard />
       </section>
 
       <section>

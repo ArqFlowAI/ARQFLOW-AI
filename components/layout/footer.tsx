@@ -9,7 +9,7 @@ export function Footer() {
           <div className="md:col-span-2">
             <h3 className="font-display text-2xl font-bold">{siteConfig.name}</h3>
             <p className="mt-4 max-w-md text-brand-beige/80">
-              Plataforma premium de IA para arquitetos, designers e marcenarias.
+              Plataforma de IA para arquitetos, designers e marcenarias.
             </p>
           </div>
           <div>

@@ -13,8 +13,8 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const parsed = projectSchema.safeParse({
       name: formData.get("name"),
-      clientName: formData.get("clientName"),
-      description: formData.get("description"),
+      clientName: formData.get("clientName") ?? undefined,
+      description: formData.get("description") ?? undefined,
     });
 
     if (!parsed.success) {

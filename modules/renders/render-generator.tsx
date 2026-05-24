@@ -10,19 +10,18 @@ import {
   RENDER_ASPECT_RATIOS,
   RENDER_STYLE_PRESETS,
   RENDER_PROMPT_SUGGESTIONS,
-  RENDER_CREDIT_COST,
 } from "@/lib/renders/constants";
 import { toast } from "sonner";
 import { Image, Loader2, Sparkles, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function RenderGenerator({ credits }: { credits: number }) {
+export function RenderGenerator() {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState("photoreal");
   const [aspectRatio, setAspectRatio] = useState("16:9");
-  const canGenerate = credits < 0 || credits >= RENDER_CREDIT_COST;
+  const canGenerate = true;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -32,7 +31,14 @@ export function RenderGenerator({ credits }: { credits: number }) {
 
     startTransition(async () => {
       const r = await generateRenderAction(fd);
-      if ("error" in r && r.error) toast.error(r.error);
+      if ("error" in r && r.error) {
+        if ((r as any).code === "REPLICATE_NOT_CONFIGURED") {
+          toast.error("Replicate não configurado. Defina REPLICATE_API_TOKEN no .env");
+        } else {
+          toast.error(r.error);
+        }
+        return;
+      }
       else {
         toast.success("Render enviado ao Replicate! Acompanhe na galeria.");
         setPrompt("");
@@ -49,15 +55,7 @@ export function RenderGenerator({ credits }: { credits: number }) {
           Gerar render fotorrealista
         </CardTitle>
         <p className="text-sm text-brand-dark/60">
-          Replicate Flux Schnell · {RENDER_CREDIT_COST} créditos por imagem
-        </p>
-        <p
-          className={cn(
-            "text-xs font-medium",
-            canGenerate ? "text-emerald-700" : "text-red-600"
-          )}
-        >
-          {credits < 0 ? "Ilimitado" : credits} créditos disponíveis
+          Replicate Flux Schnell — gere renders diretamente (verifique REPLICATE_API_TOKEN)
         </p>
       </CardHeader>
       <CardContent>
@@ -142,11 +140,7 @@ export function RenderGenerator({ credits }: { credits: number }) {
             />
           </div>
 
-          <Button
-            type="submit"
-            disabled={pending || !canGenerate}
-            className="w-full gap-2"
-          >
+          <Button type="submit" disabled={pending} className="w-full gap-2">
             {pending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -160,11 +154,7 @@ export function RenderGenerator({ credits }: { credits: number }) {
             )}
           </Button>
 
-          {!canGenerate && (
-            <p className="text-center text-xs text-red-600">
-              Créditos insuficientes.
-            </p>
-          )}
+          {/* No credit checks — feature available to all authenticated users */}
         </form>
       </CardContent>
     </Card>

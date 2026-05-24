@@ -20,7 +20,7 @@ export default function RegisterPage() {
           ARQFLOW AI
         </Link>
         <CardTitle className="mt-4 font-display">Crie sua conta</CardTitle>
-        <CardDescription>14 dias grátis · Sem cartão de crédito</CardDescription>
+        <CardDescription>Criar sua conta agora</CardDescription>
       </CardHeader>
       <CardContent>
         <RegisterForm />

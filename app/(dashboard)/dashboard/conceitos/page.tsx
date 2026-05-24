@@ -41,7 +41,7 @@ export default async function ConceitosPage() {
         ]}
       />
 
-      <ConceptGenerator credits={session!.credits} />
+      <ConceptGenerator />
 
       <div>
         <h2 className="font-display text-lg font-semibold mb-4">

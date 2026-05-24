@@ -1,6 +1,5 @@
 import { renderRepository } from "@/repositories/render.repository";
 import { generateRender } from "@/services/replicate.service";
-import { consumeCredits } from "@/services/credits.service";
 import { buildRenderPrompt } from "@/lib/renders/prompts";
 import { RENDER_CREDIT_COST } from "@/lib/renders/constants";
 import { renderSchema, type RenderInput } from "@/utils/validations";
@@ -29,12 +28,7 @@ export async function createAndQueueRender(params: {
 }) {
   const fullPrompt = buildRenderPrompt(params.input);
 
-  await consumeCredits(
-    params.organizationId,
-    RENDER_CREDIT_COST,
-    "render",
-    params.userId
-  );
+  // Credits removed: feature now unlimited for authenticated users.
 
   const render = await renderRepository.create({
     organizationId: params.organizationId,

@@ -11,28 +11,31 @@ import { ConceptResult } from "@/modules/concepts/concept-result";
 import {
   CONCEPT_ENVIRONMENTS,
   CONCEPT_STYLES,
-  CONCEPT_CREDIT_COST,
 } from "@/lib/concepts/constants";
 import type { ConceptContent } from "@/types";
 import { toast } from "sonner";
 import { Sparkles, Loader2, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function ConceptGenerator({ credits }: { credits: number }) {
+export function ConceptGenerator() {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [result, setResult] = useState<ConceptContent | null>(null);
   const [customEnv, setCustomEnv] = useState(false);
   const [customStyle, setCustomStyle] = useState(false);
 
-  const canGenerate = credits < 0 || credits >= CONCEPT_CREDIT_COST;
+  const canGenerate = true;
 
   function handleSubmit(formData: FormData) {
     setResult(null);
     startTransition(async () => {
       const r = await generateConceptAction(formData);
       if ("error" in r && r.error) {
-        toast.error(r.error);
+        if ((r as any).code === "OPENAI_NOT_CONFIGURED") {
+          toast.error("OpenAI não configurada. Defina OPENAI_API_KEY no .env");
+        } else {
+          toast.error(r.error);
+        }
         return;
       }
       if ("data" in r && r.data) {
@@ -53,15 +56,7 @@ export function ConceptGenerator({ credits }: { credits: number }) {
             Gerar conceito arquitetônico
           </CardTitle>
           <p className="text-sm text-brand-dark/60">
-            Powered by OpenAI GPT-4o · {CONCEPT_CREDIT_COST} créditos por geração
-          </p>
-          <p
-            className={cn(
-              "text-xs font-medium",
-              canGenerate ? "text-emerald-700" : "text-red-600"
-            )}
-          >
-            {credits < 0 ? "Ilimitado" : credits} créditos disponíveis
+            Powered by OpenAI GPT-4o — gere conceitos diretamente (verifique OPENAI_API_KEY)
           </p>
         </CardHeader>
         <CardContent>

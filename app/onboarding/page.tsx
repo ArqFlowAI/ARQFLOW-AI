@@ -105,7 +105,7 @@ export default function OnboardingPage() {
           )}
           {step === 2 && (
             <div className="space-y-4 py-8 text-center text-brand-dark/70">
-              <p>Seu escritório foi configurado com o plano PREMIUM.</p>
+              <p>Seu escritório foi configurado e está pronto para usar.</p>
               <p>Todos os recursos estão liberados: CRM, WhatsApp, renders IA e automações.</p>
             </div>
           )}

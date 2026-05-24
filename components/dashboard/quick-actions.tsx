@@ -17,35 +17,30 @@ const actions = [
     description: "Paleta, materiais e storytelling",
     href: "/dashboard/conceitos",
     icon: Lightbulb,
-    cost: "2 créditos",
   },
   {
     title: "Render IA",
     description: "Imagem fotorealista do ambiente",
     href: "/dashboard/renders",
     icon: Image,
-    cost: "5 créditos",
   },
   {
     title: "Orçamento",
     description: "Proposta com PDF automático",
     href: "/dashboard/orcamentos",
     icon: FileText,
-    cost: "1 crédito",
   },
   {
     title: "Novo lead",
     description: "Adicionar ao pipeline CRM",
     href: "/crm",
     icon: Users,
-    cost: "Incluso",
   },
   {
     title: "WhatsApp",
     description: "Disparar automação",
     href: "/whatsapp",
     icon: MessageCircle,
-    cost: "Incluso",
   },
 ];
 
@@ -76,9 +71,6 @@ export function QuickActions() {
                 </p>
               </div>
               <div className="flex flex-col items-end gap-0.5">
-                <span className="text-[10px] font-medium text-brand-light">
-                  {action.cost}
-                </span>
                 <ArrowUpRight className="h-3.5 w-3.5 text-brand-dark/30 group-hover:text-brand-dark" />
               </div>
             </Link>

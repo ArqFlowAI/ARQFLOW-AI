@@ -73,12 +73,7 @@ export async function createBudgetProposal(params: {
   const subtotal = params.items.reduce((s, i) => s + i.total, 0);
   const total = Math.max(0, subtotal - params.discount + params.tax);
 
-  await consumeCredits(
-    params.organizationId,
-    BUDGET_CREDIT_COST,
-    "budget",
-    params.userId
-  );
+  // Credits removed: budget generation available to authenticated users.
 
   let estimateResult = null;
   let branding: BudgetBranding = {};

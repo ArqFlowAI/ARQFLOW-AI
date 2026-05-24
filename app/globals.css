@@ -49,6 +49,7 @@
   }
   body {
     @apply bg-brand-bg text-brand-black antialiased;
+    overflow-x: hidden;
   }
   .dark body {
     @apply bg-brand-black text-brand-bg;

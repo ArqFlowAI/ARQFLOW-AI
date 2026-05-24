@@ -13,6 +13,6 @@ export async function PlanRouteGuard({
   returnPath: string;
   children: React.ReactNode;
 }) {
-  await enforcePlanFeature(feature, returnPath);
+  await enforcePlanFeature();
   return <>{children}</>;
 }

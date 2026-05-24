@@ -1,6 +1,5 @@
 import { conceptRepository } from "@/repositories/concept.repository";
 import { generateArchitecturalConcept } from "@/services/openai.service";
-import { consumeCredits } from "@/services/credits.service";
 import { CONCEPT_CREDIT_COST } from "@/lib/concepts/constants";
 import { conceptSchema, type ConceptInput } from "@/utils/validations";
 import { prisma } from "@/lib/prisma";
@@ -23,12 +22,7 @@ export async function generateConcept(params: {
 }) {
   const content = await generateArchitecturalConcept(params.input);
 
-  await consumeCredits(
-    params.organizationId,
-    CONCEPT_CREDIT_COST,
-    "concept",
-    params.userId
-  );
+  // Credits removed: concept generation available to authenticated users.
 
   const concept = await conceptRepository.create({
     organizationId: params.organizationId,

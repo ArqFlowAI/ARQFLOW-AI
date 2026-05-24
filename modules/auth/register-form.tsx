@@ -69,7 +69,7 @@ export function RegisterForm() {
           <p className="mt-1 text-xs text-brand-dark/50">Mínimo 8 caracteres</p>
         </div>
         <Button type="submit" className="w-full" disabled={pending}>
-          {pending ? "Criando conta..." : "Criar conta PREMIUM"}
+          {pending ? "Criando conta..." : "Criar conta"}
         </Button>
       </form>
     </>

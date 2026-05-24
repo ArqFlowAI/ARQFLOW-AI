@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function BudgetWizard({ credits }: { credits: number }) {
+export function BudgetWizard() {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [pending, startTransition] = useTransition();
@@ -51,7 +51,7 @@ export function BudgetWizard({ credits }: { credits: number }) {
   const [estimate, setEstimate] = useState<BudgetEstimateResult | null>(null);
   const [items, setItems] = useState<BudgetItem[]>([]);
 
-  const canSubmit = (credits < 0 || credits >= BUDGET_CREDIT_COST) && items.length > 0;
+  const canSubmit = items.length > 0;
 
   const total = useMemo(() => {
     const sub = items.reduce((s, i) => s + i.total, 0);
@@ -167,9 +167,7 @@ export function BudgetWizard({ credits }: { credits: number }) {
               {step === 2 && "Revisar itens"}
               {step === 3 && "Gerar proposta"}
             </CardTitle>
-            <p className="text-xs text-brand-dark/50">
-              {BUDGET_CREDIT_COST} crédito · {credits < 0 ? "Ilimitado" : credits} disponíveis
-            </p>
+            <p className="text-xs text-brand-dark/50">Geração de proposta via IA</p>
           </CardHeader>
           <CardContent className="space-y-5">
             {step === 1 && (

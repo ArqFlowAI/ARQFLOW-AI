@@ -8,8 +8,8 @@ const faqs = [
     a: "Stripe, Kiwify, WhatsApp (Z-API/Twilio), OpenAI, Replicate, Resend, n8n e Supabase Storage.",
   },
   {
-    q: "Como funcionam os créditos IA?",
-    a: "Cada plano inclui créditos mensais. Conceitos consomem 2 créditos, renders 5 créditos, orçamentos 1 crédito.",
+    q: "Como funcionam os recursos de IA?",
+    a: "Todos os recursos de IA (Render, Conceitos, Orçamentos) estão disponíveis e ilimitados para usuários autenticados.",
   },
   {
     q: "Posso cancelar a qualquer momento?",

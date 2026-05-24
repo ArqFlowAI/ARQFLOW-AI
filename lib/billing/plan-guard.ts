@@ -1,68 +1,36 @@
-import { prisma } from "@/lib/prisma";
-import type { PlanFeature } from "@/config/plans";
-import type { Subscription, SubscriptionStatus } from "@prisma/client";
-
-export async function getOrgSubscription(organizationId: string) {
-  return prisma.subscription.findUnique({
-    where: { organizationId },
-  });
+// Billing guards neutralized: always return an active, unlimited subscription-like object.
+export async function getOrgSubscription(_organizationId: string) {
+  return null;
 }
 
 export async function assertActiveSubscription(organizationId: string) {
-  const sub = await getOrgSubscription(organizationId);
-  if (!sub) {
-    return {
-      organizationId,
-      plan: "PREMIUM",
-      status: "ACTIVE" as SubscriptionStatus,
-      credits: -1,
-      creditsUsed: 0,
-      currentPeriodStart: null,
-      currentPeriodEnd: null,
-      cancelAtPeriodEnd: false,
-      canceledAt: null,
-      billingProvider: null,
-      stripeCustomerId: null,
-    } as Subscription;
-  }
-
-  return sub;
+  return {
+    organizationId,
+    plan: null,
+    status: "ACTIVE",
+    credits: -1,
+    creditsUsed: 0,
+    currentPeriodStart: null,
+    currentPeriodEnd: null,
+    cancelAtPeriodEnd: false,
+    canceledAt: null,
+    billingProvider: null,
+    stripeCustomerId: null,
+  } as unknown;
 }
 
-export async function assertPlanFeature(
-  organizationId: string,
-  feature: PlanFeature
-) {
-  return assertActiveSubscription(organizationId);
+export async function assertPlanFeature(_organizationId: string, _feature: string) {
+  return assertActiveSubscription(_organizationId);
 }
 
-/** @deprecated Use assertPlanFeature */
-export async function assertFeature(
-  organizationId: string,
-  feature: "whatsapp" | "automations" | "team" | "crm" | "renders" | "budgets"
-) {
-  const map: Record<string, PlanFeature> = {
-    whatsapp: "whatsapp",
-    automations: "automations",
-    team: "projects",
-    crm: "crm",
-    renders: "renders",
-    budgets: "budgets",
-  };
-  return assertPlanFeature(organizationId, map[feature] ?? "dashboard");
+export async function assertFeature(_organizationId: string, _feature: string) {
+  return assertPlanFeature(_organizationId, "dashboard");
 }
 
-export async function assertPlanLimit(
-  organizationId: string,
-  resource: string,
-  getCurrentCount: () => Promise<number>
-) {
-  return assertActiveSubscription(organizationId);
+export async function assertPlanLimit(_organizationId: string) {
+  return assertActiveSubscription(_organizationId);
 }
 
-export function canAccessPlan(
-  currentPlan: string,
-  requiredPlan: string
-) {
+export function canAccessPlan() {
   return true;
 }

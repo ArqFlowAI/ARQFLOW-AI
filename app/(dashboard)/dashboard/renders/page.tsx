@@ -1,10 +1,9 @@
 import { getSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { renderRepository } from "@/repositories/render.repository";
-import { RenderGenerator, RenderGallery } from "@/modules/renders";
+  import { RenderGenerator, RenderGallery } from "@/modules/renders";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ModuleStats } from "@/components/dashboard/module-stats";
-import { RENDER_CREDIT_COST } from "@/lib/renders/constants";
 import { Sparkles } from "lucide-react";
 
 export default async function RendersPage() {
@@ -42,7 +41,7 @@ export default async function RendersPage() {
 
       <div className="grid gap-8 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <RenderGenerator credits={session!.credits} />
+          <RenderGenerator />
         </div>
         <div className="lg:col-span-3 rounded-2xl border border-brand-light/20 bg-brand-beige/10 p-6 dark:bg-brand-dark/10">
           <h3 className="font-display font-semibold flex items-center gap-2">
@@ -61,7 +60,7 @@ export default async function RendersPage() {
               <code className="text-xs bg-white/50 px-1 rounded">renders</code>
             </li>
             <li>
-              <strong>4.</strong> Custo: {RENDER_CREDIT_COST} créditos por render
+              <strong>4.</strong> Configure REPLICATE_API_TOKEN para habilitar geração
             </li>
           </ol>
           <p className="mt-4 text-xs text-brand-dark/50">
