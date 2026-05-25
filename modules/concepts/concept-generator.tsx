@@ -17,14 +17,14 @@ import { toast } from "sonner";
 import { Sparkles, Loader2, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function ConceptGenerator() {
+export function ConceptGenerator({ isOpenAIConfigured }: { isOpenAIConfigured: boolean }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [result, setResult] = useState<ConceptContent | null>(null);
   const [customEnv, setCustomEnv] = useState(false);
   const [customStyle, setCustomStyle] = useState(false);
 
-  const canGenerate = true;
+  const canGenerate = isOpenAIConfigured;
 
   function handleSubmit(formData: FormData) {
     setResult(null);
@@ -56,7 +56,7 @@ export function ConceptGenerator() {
             Gerar conceito arquitetônico
           </CardTitle>
           <p className="text-sm text-brand-dark/60">
-            Powered by OpenAI GPT-4o — gere conceitos diretamente (verifique OPENAI_API_KEY)
+            Powered by OpenAI GPT-4o — gere conceitos diretamente.
           </p>
         </CardHeader>
         <CardContent>
@@ -198,7 +198,7 @@ export function ConceptGenerator() {
 
             {!canGenerate && (
               <p className="text-center text-xs text-red-600">
-                Créditos insuficientes.
+                OpenAI não configurada. Defina OPENAI_API_KEY no .env para gerar conceitos.
               </p>
             )}
           </form>

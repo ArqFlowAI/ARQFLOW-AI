@@ -35,7 +35,7 @@ export default async function DashboardPage() {
               {firstName}, seu escritório está em movimento
             </h1>
             <p className="mt-2 text-sm text-brand-dark/70 dark:text-brand-beige/70">
-              {session?.organizationName} · Plano {session?.plan}
+              {session?.organizationName}
             </p>
           </div>
           <div className="flex gap-6 text-center sm:text-right">
@@ -120,7 +120,6 @@ export default async function DashboardPage() {
           <CreditsWidget
             remaining={stats.creditsRemaining}
             total={stats.creditsTotal}
-            plan={session!.plan}
           />
           <QuickActions />
         </div>

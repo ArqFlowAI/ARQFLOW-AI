@@ -3,11 +3,9 @@ import { Zap } from "lucide-react";
 export function CreditsWidget({
   remaining,
   total,
-  plan,
 }: {
   remaining: number;
   total: number;
-  plan: string;
 }) {
   const used = total - remaining;
   const pct = total > 0 ? Math.round((used / total) * 100) : 0;
@@ -19,13 +17,13 @@ export function CreditsWidget({
         <div className="flex items-center gap-2">
           <Zap className="h-5 w-5 text-brand-beige" />
           <span className="text-sm font-medium text-brand-beige/80">
-            Créditos IA · Plano {plan}
+            Recursos IA disponíveis
           </span>
         </div>
         <p className="mt-4 font-display text-4xl font-bold">
           {remaining < 0 ? "Ilimitado" : remaining}
         </p>
-        <p className="text-sm text-brand-beige/70">créditos disponíveis</p>
+        <p className="text-sm text-brand-beige/70">acesso liberado</p>
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-brand-black/40">
           <div
             className="h-full rounded-full bg-brand-beige transition-all"

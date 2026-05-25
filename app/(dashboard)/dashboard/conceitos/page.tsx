@@ -7,7 +7,6 @@ import {
 } from "@/modules/concepts";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ModuleStats } from "@/components/dashboard/module-stats";
-import { CONCEPT_CREDIT_COST } from "@/lib/concepts/constants";
 import { startOfMonth } from "date-fns";
 
 export default async function ConceitosPage() {
@@ -32,16 +31,15 @@ export default async function ConceitosPage() {
         stats={[
           { label: "Total gerados", value: total, icon: "lightbulb" },
           { label: "Este mês", value: thisMonth, icon: "calendar" },
-          { label: "Créditos disp.", value: session!.credits, icon: "sparkles" },
           {
-            label: "Custo / conceito",
-            value: `${CONCEPT_CREDIT_COST} créditos`,
+            label: "OpenAI",
+            value: process.env.OPENAI_API_KEY ? "Ativado" : "Inativo",
             icon: "sparkles",
           },
         ]}
       />
 
-      <ConceptGenerator />
+      <ConceptGenerator isOpenAIConfigured={!!process.env.OPENAI_API_KEY} />
 
       <div>
         <h2 className="font-display text-lg font-semibold mb-4">

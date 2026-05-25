@@ -15,7 +15,6 @@ import {
   PROJECT_TYPES,
   DESIGN_STYLES,
   FINISH_LEVELS,
-  BUDGET_CREDIT_COST,
 } from "@/lib/budgets/constants";
 import type { BudgetEstimateResult } from "@/types/budget";
 import type { BudgetItem } from "@/types";
@@ -32,7 +31,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function BudgetWizard() {
+export function BudgetWizard({ isOpenAIConfigured }: { isOpenAIConfigured: boolean }) {
   const router = useRouter();
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [pending, startTransition] = useTransition();
@@ -52,6 +51,7 @@ export function BudgetWizard() {
   const [items, setItems] = useState<BudgetItem[]>([]);
 
   const canSubmit = items.length > 0;
+  const canGenerateBudget = isOpenAIConfigured;
 
   const total = useMemo(() => {
     const sub = items.reduce((s, i) => s + i.total, 0);
@@ -431,7 +431,7 @@ export function BudgetWizard() {
                   </Button>
                   <Button
                     className="flex-1 gap-2"
-                    disabled={pending || !canSubmit || !title}
+                    disabled={pending || !canSubmit || !title || !canGenerateBudget}
                     onClick={handleGenerate}
                   >
                     {pending ? (
@@ -442,6 +442,11 @@ export function BudgetWizard() {
                     Gerar proposta + PDF
                   </Button>
                 </div>
+                {!canGenerateBudget && (
+                  <p className="mt-3 text-sm text-red-600">
+                    OpenAI não configurada. Defina OPENAI_API_KEY no .env para gerar a proposta e o PDF.
+                  </p>
+                )}
               </>
             )}
           </CardContent>

@@ -15,13 +15,13 @@ import { toast } from "sonner";
 import { Image, Loader2, Sparkles, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function RenderGenerator() {
+export function RenderGenerator({ isReplicateConfigured }: { isReplicateConfigured: boolean }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState("photoreal");
   const [aspectRatio, setAspectRatio] = useState("16:9");
-  const canGenerate = true;
+  const canGenerate = isReplicateConfigured;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,7 +55,7 @@ export function RenderGenerator() {
           Gerar render fotorrealista
         </CardTitle>
         <p className="text-sm text-brand-dark/60">
-          Replicate Flux Schnell — gere renders diretamente (verifique REPLICATE_API_TOKEN)
+          Replicate Flux Schnell — gere renders diretamente.
         </p>
       </CardHeader>
       <CardContent>
@@ -140,7 +140,7 @@ export function RenderGenerator() {
             />
           </div>
 
-          <Button type="submit" disabled={pending} className="w-full gap-2">
+          <Button type="submit" disabled={pending || !canGenerate} className="w-full gap-2">
             {pending ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -154,7 +154,11 @@ export function RenderGenerator() {
             )}
           </Button>
 
-          {/* No credit checks — feature available to all authenticated users */}
+          {!canGenerate && (
+            <p className="text-center text-xs text-red-600">
+              Replicate não configurado. Defina REPLICATE_API_TOKEN no .env para gerar renders.
+            </p>
+          )}
         </form>
       </CardContent>
     </Card>

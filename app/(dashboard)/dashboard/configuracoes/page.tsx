@@ -1,6 +1,5 @@
 import { getSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
-import { normalizePlanKey } from "@/config/plans";
 import { SettingsForm } from "@/modules/settings/settings-form";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,12 +22,10 @@ export default async function ConfiguracoesPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="border-brand-light/15">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-brand-dark/60">Plano</CardTitle>
+            <CardTitle className="text-sm font-medium text-brand-dark/60">Conta</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="font-display text-xl font-bold">
-              {normalizePlanKey(org?.subscription?.plan ?? "PREMIUM")}
-            </p>
+            <p className="font-display text-xl font-bold">Operacional</p>
             <Badge className="mt-2">{org?.subscription?.status ?? "ACTIVE"}</Badge>
           </CardContent>
         </Card>

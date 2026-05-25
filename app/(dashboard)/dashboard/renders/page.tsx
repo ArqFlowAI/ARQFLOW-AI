@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
 import { renderRepository } from "@/repositories/render.repository";
-  import { RenderGenerator, RenderGallery } from "@/modules/renders";
+import { RenderGenerator, RenderGallery } from "@/modules/renders";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ModuleStats } from "@/components/dashboard/module-stats";
 import { Sparkles } from "lucide-react";
@@ -41,7 +41,7 @@ export default async function RendersPage() {
 
       <div className="grid gap-8 lg:grid-cols-5">
         <div className="lg:col-span-2">
-          <RenderGenerator />
+          <RenderGenerator isReplicateConfigured={!!process.env.REPLICATE_API_TOKEN} />
         </div>
         <div className="lg:col-span-3 rounded-2xl border border-brand-light/20 bg-brand-beige/10 p-6 dark:bg-brand-dark/10">
           <h3 className="font-display font-semibold flex items-center gap-2">

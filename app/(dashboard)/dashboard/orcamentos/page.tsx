@@ -3,7 +3,6 @@ import { budgetRepository } from "@/repositories/budget.repository";
 import { BudgetWizard, BudgetHistoryList } from "@/modules/budgets";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { ModuleStats } from "@/components/dashboard/module-stats";
-import { BUDGET_CREDIT_COST } from "@/lib/budgets/constants";
 import { formatCurrency } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 
@@ -49,10 +48,9 @@ export default async function OrcamentosPage() {
           Novo orçamento
         </h2>
         <p className="text-sm text-brand-dark/50 mb-6">
-          Etapa 1: parâmetros · Etapa 2: itens · Etapa 3: proposta + PDF (
-          {BUDGET_CREDIT_COST} crédito)
+          Etapa 1: parâmetros · Etapa 2: itens · Etapa 3: proposta + PDF
         </p>
-        <BudgetWizard />
+        <BudgetWizard isOpenAIConfigured={!!process.env.OPENAI_API_KEY} />
       </section>
 
       <section>
