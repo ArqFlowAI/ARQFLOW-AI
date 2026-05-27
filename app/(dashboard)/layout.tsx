@@ -5,6 +5,8 @@ import { Topbar } from "@/components/dashboard/topbar";
 import { MobileNav } from "@/components/dashboard/mobile-nav";
 import { DashboardLayoutClient } from "@/components/dashboard/dashboard-layout-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
   children,
 }: {

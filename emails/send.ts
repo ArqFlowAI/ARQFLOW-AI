@@ -2,14 +2,25 @@ import { Resend } from "resend";
 import { welcomeEmailHtml } from "./templates/welcome";
 import { passwordResetHtml } from "./templates/password-reset";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend: Resend | null = null;
+
+function getResend(): Resend {
+  if (!resend) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY is not configured");
+    }
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
+
 const from = process.env.RESEND_FROM_EMAIL ?? "ARQFLOW AI <onboarding@arqflow.ai>";
 
 export async function sendWelcomeEmail(params: {
   to: string;
   name: string;
 }) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from,
     to: params.to,
     subject: "Bem-vindo ao ARQFLOW AI — Sua conta está ativa",
@@ -21,7 +32,7 @@ export async function sendPasswordResetEmail(params: {
   to: string;
   resetUrl: string;
 }) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from,
     to: params.to,
     subject: "Redefinir sua senha — ARQFLOW AI",
@@ -34,7 +45,7 @@ export async function sendLeadRecoveryEmail(params: {
   name: string;
   message: string;
 }) {
-  return resend.emails.send({
+  return getResend().emails.send({
     from,
     to: params.to,
     subject: "Ainda pensando no seu projeto? — ARQFLOW AI",
