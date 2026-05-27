@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import type { SessionUser } from "@/types";
 
@@ -10,6 +10,7 @@ type AuthContextValue = {
   appUser: SessionUser | null;
   loading: boolean;
   refresh: () => Promise<void>;
+  isConfigured: boolean;
 };
 
 const AuthContext = createContext<AuthContextValue>({
@@ -17,15 +18,22 @@ const AuthContext = createContext<AuthContextValue>({
   appUser: null,
   loading: true,
   refresh: async () => {},
+  isConfigured: false,
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
   const [appUser, setAppUser] = useState<SessionUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = useMemo(() => createClient(), []);
+  const isConfigured = useMemo(() => isSupabaseConfigured(), []);
+  const supabase = useMemo(() => (isConfigured ? createClient() : null), [isConfigured]);
 
   async function refresh() {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+    
     const {
       data: { user },
     } = await supabase.auth.getUser();
@@ -50,6 +58,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+    
     refresh().finally(() => setLoading(false));
 
     const {
@@ -71,11 +84,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     return () => subscription.unsubscribe();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [supabase]);
 
   return (
     <AuthContext.Provider
-      value={{ supabaseUser, appUser, loading, refresh }}
+      value={{ supabaseUser, appUser, loading, refresh, isConfigured }}
     >
       {children}
     </AuthContext.Provider>
