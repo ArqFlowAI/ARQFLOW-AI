@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { QueryProvider } from "@/providers/query-provider";
 import { AuthProvider } from "@/providers/auth-provider";
+import { WhatsAppFloatButton } from "@/components/layout/whatsapp-float-button";
 import { Toaster } from "sonner";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
@@ -54,7 +55,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" suppressHydrationWarning>
+    <html lang="pt-BR" suppressHydrationWarning className="bg-background">
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} font-sans`}
       >
@@ -63,6 +64,7 @@ export default function RootLayout({
             <AuthProvider>
             {children}
             </AuthProvider>
+            <WhatsAppFloatButton />
             <Toaster
               position="top-right"
               toastOptions={{
